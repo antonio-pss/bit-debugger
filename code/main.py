@@ -1,6 +1,10 @@
+import pygame.sprite
+
 from settings import *
+from support import *
 from sprites import *
 from groups import *
+from timer import Timer
 
 
 class Game:
@@ -16,9 +20,21 @@ class Game:
 
         # Groups
         self.all_sprites = AllSprites()
+        self.collision_sprites = pygame.sprite.Group()
+
+        self.setup()
 
     def setup(self):
-        pass
+        tmx_map = load_pygame(join('..', 'data', 'maps', 'level.tmx'))
+
+        for x, y, image in tmx_map.get_layer_by_name('Floor').tiles():
+            Sprite((x*TILE_SIZE, y*TILE_SIZE), image, (self.all_sprites, self.collision_sprites))
+
+        for obj in tmx_map.get_layer_by_name('Entities'):
+            if obj.name == 'Player':
+                pass
+                # self.player = Player((obj.x, obj.y), surf=, self.all_sprites, self.collision_sprites)
+
 
     def run(self):
         delta = self.clock.tick(FRAMERATE) / 1000
@@ -32,7 +48,7 @@ class Game:
             self.all_sprites.update(delta)
 
             # Draw
-            self.all_sprites.draw(self.player)
+            self.all_sprites.draw()
             pygame.display.update()
 
         pygame.quit()

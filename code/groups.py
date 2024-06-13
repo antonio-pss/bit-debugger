@@ -7,6 +7,6 @@ class AllSprites(pygame.sprite.Group):
         self.display_surface = pygame.display.get_surface()
         self.offset = vector()
 
-    def draw(self, target_pos):
+    def draw(self):
         for sprite in self:
-            sprite.draw(self.display_surface)
+            self.display_surface.blit(sprite.image, sprite.rect)
