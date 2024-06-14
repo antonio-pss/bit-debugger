@@ -90,7 +90,7 @@ class Player(AnimatedSprite):
         for enemy in self.enemy_sprites:
             if self.rect.colliderect(enemy.rect):
                 if self.rect.bottom < enemy.rect.top + enemy.rect.height / 2 and self.direction.y > 0:
-                    enemy.kill()
+                    enemy.destroy()
                     self.direction.y = -10
                 else:
                     self.rect.topleft = self.start_pos
@@ -106,7 +106,7 @@ class Player(AnimatedSprite):
 class Enemy(AnimatedSprite):
     def __init__(self, pos, frames_walk, frames_dead, groups):
         super().__init__(pos, frames_walk, groups)
-        self.death_timer = Timer(200, self.kill)
+        self.death_timer = Timer(2000, self.kill)
 
         self.frames_walk = frames_walk
         self.frames_dead = frames_dead
@@ -138,5 +138,5 @@ class CI(Enemy):
         self.death_timer.update()
         if not self.death_timer:
             self.move(delta)
-            self.animate(delta)
-            self.constraint()
+        self.animate(delta)
+        self.constraint()
