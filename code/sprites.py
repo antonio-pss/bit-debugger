@@ -30,6 +30,7 @@ class Player(AnimatedSprite):
         self.frames_walk = frames_walk
 
         # movement & collision
+        self.start_pos = pos
         self.collision_sprites = collision_sprites
         self.direction = vector()
         self.speed = 400
@@ -42,7 +43,7 @@ class Player(AnimatedSprite):
         keys = pygame.key.get_pressed()
         self.direction.x = keys[pygame.K_d] - keys[pygame.K_a]
         if keys[pygame.K_SPACE] and self.on_floor:
-            self.direction.y = -20
+            self.direction.y = -15
 
     def move(self, delta):
         # horizontal
@@ -56,7 +57,7 @@ class Player(AnimatedSprite):
 
     def collision(self, direction):
         for sprite in self.collision_sprites:
-            if sprite.rect.collidrect(self.rect):
+            if sprite.rect.colliderect(self.rect):
                 if direction == 'horizontal':
                     if self.direction.x > 0: self.rect.right = sprite.rect.left
                     if self.direction.x < 0: self.rect.left = sprite.rect.right
@@ -82,6 +83,9 @@ class Player(AnimatedSprite):
 
         self.image = self.frames[int(self.frame_index) % len(self.frames)]
         self.image = pygame.transform.flip(self.image, self.flip, False)
+
+    def out_border(self):
+        pass
 
     def update(self, delta):
         self.check_floor()
