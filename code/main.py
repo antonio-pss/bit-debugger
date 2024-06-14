@@ -21,6 +21,7 @@ class Game:
         # Groups
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
+        self.enemy_sprites = pygame.sprite.Group()
 
         self.load_assets()
         self.setup()
@@ -39,7 +40,7 @@ class Game:
         self.level_height = tmx_map.height * TILE_SIZE
 
         for x, y, image in tmx_map.get_layer_by_name('Floor').tiles():
-            Sprite((x*TILE_SIZE, y*TILE_SIZE), image, (self.all_sprites, self.collision_sprites))
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites, self.collision_sprites))
 
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
@@ -47,7 +48,13 @@ class Game:
                                      frames_walk=self.bit_frames_walk,
                                      frames_jumping=self.bit_frames_jump,
                                      groups=self.all_sprites,
-                                     collision_sprites=self.collision_sprites)
+                                     collision_sprites=self.collision_sprites,
+                                     enemy_sprites=self.enemy_sprites)
+            if obj.name == 'Worm':
+                self.enemy = CI(rect=pygame.FRect(obj.x, obj.y, obj.width, obj.height),
+                   frames_walk=self.ci_frames_walk,
+                   frames_dead=self.ci_frames_dead,
+                   groups=(self.all_sprites, self.enemy_sprites))
 
     def out_border(self):
         if self.player.rect.y > self.level_height + 1000:
@@ -63,10 +70,11 @@ class Game:
 
             # Update
             self.all_sprites.update(delta)
+            self.enemy_sprites.update(delta)
             self.out_border()
 
             # Draw
-            self.display_surface.fill('black')
+            self.display_surface.fill('#87ceeb')
             self.all_sprites.draw(self.player.rect.center)
             pygame.display.update()
 

@@ -1,4 +1,5 @@
 from settings import *
+from timer import Timer
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -21,7 +22,7 @@ class AnimatedSprite(Sprite):
 
 
 class Player(AnimatedSprite):
-    def __init__(self, pos, frames_walk, frames_jumping, groups, collision_sprites):
+    def __init__(self, pos, frames_walk, frames_jumping, groups, collision_sprites, enemy_sprites):
         super().__init__(pos, frames_walk, groups)
         self.flip = False
 
@@ -32,6 +33,7 @@ class Player(AnimatedSprite):
         # movement & collision
         self.start_pos = pos
         self.collision_sprites = collision_sprites
+        self.enemy_sprites = enemy_sprites
         self.direction = vector()
         self.speed = 400
         self.gravity = 50
@@ -71,24 +73,70 @@ class Player(AnimatedSprite):
         self.on_floor = True if bottom_rect.collidelist([sprite.rect for sprite in self.collision_sprites]) >= 0 else False
 
     def animate(self, delta):
-        # lógica para o personagem virar quando andar
+        # personagem virar quando andar
         if self.direction.x:
             self.frame_index += self.animation_speed * delta
             self.flip = self.direction.x < 0
         else:
             self.frame_index = 0
 
-        # lógica para quando o personagem pular
+        # personagem pular
         self.frames = self.frames_walk if self.on_floor else self.frames_jumping
 
         self.image = self.frames[int(self.frame_index) % len(self.frames)]
         self.image = pygame.transform.flip(self.image, self.flip, False)
 
-    def out_border(self):
-        pass
+    def check_enemy_collision(self):
+        for enemy in self.enemy_sprites:
+            if self.rect.colliderect(enemy.rect):
+                if self.rect.bottom < enemy.rect.top + enemy.rect.height / 2 and self.direction.y > 0:
+                    enemy.kill()
+                    self.direction.y = -10
+                else:
+                    self.rect.topleft = self.start_pos
 
     def update(self, delta):
         self.check_floor()
         self.input()
         self.move(delta)
+        self.check_enemy_collision()
         self.animate(delta)
+
+
+class Enemy(AnimatedSprite):
+    def __init__(self, pos, frames_walk, frames_dead, groups):
+        super().__init__(pos, frames_walk, groups)
+        self.death_timer = Timer(200, self.kill)
+
+        self.frames_walk = frames_walk
+        self.frames_dead = frames_dead
+
+    def destroy(self):
+        self.death_timer.activate()
+        self.frames = self.frames_dead
+
+
+class CI(Enemy):
+    def __init__(self, rect, frames_walk, frames_dead, groups):
+        super().__init__(rect.topleft, frames_walk, frames_dead, groups)
+        self.rect.bottomleft = rect.bottomleft
+        self.main_rect = rect
+
+        # movement
+        self.direction = 1
+        self.speed = 100
+
+    def move(self, delta):
+        self.rect.x -= self.direction * self.speed * delta
+
+    def constraint(self):
+        if not self.main_rect.contains(self.rect):
+            self.direction *= -1
+            self.frames = [pygame.transform.flip(surf, True, False) for surf in self.frames]
+
+    def update(self, delta):
+        self.death_timer.update()
+        if not self.death_timer:
+            self.move(delta)
+            self.animate(delta)
+            self.constraint()
