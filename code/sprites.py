@@ -8,10 +8,26 @@ class Sprite(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(topleft=pos)
 
 
-class Player(Sprite):
-    def __init__(self, pos, surf, groups, collision_sprites):
-        super().__init__(pos, surf, groups)
+class AnimatedSprite(Sprite):
+    def __init__(self, pos, frames, groups):
+        self.frames = frames
+        self.frame_index = 0
+        self.animation_speed = 10
+        super().__init__(pos, self.frames[self.frame_index], groups)
+
+    def animate(self, delta):
+        self.frame_index += self.animation_speed * delta
+        self.image = self.frames[int(self.frame_index) % len(self.frames)]
+
+
+class Player(AnimatedSprite):
+    def __init__(self, pos, frames_walk, frames_jumping, groups, collision_sprites):
+        super().__init__(pos, frames_walk, groups)
         self.flip = False
+
+        # frames
+        self.frames_jumping = frames_jumping
+        self.frames_walk = frames_walk
 
         # movement & collision
         self.collision_sprites = collision_sprites
@@ -53,7 +69,22 @@ class Player(Sprite):
         bottom_rect = pygame.FRect((0, 0), (self.rect.width, 2)).move_to(midtop=self.rect.midbottom)
         self.on_floor = True if bottom_rect.collidelist([sprite.rect for sprite in self.collision_sprites]) >= 0 else False
 
+    def animate(self, delta):
+        # lógica para o personagem virar quando andar
+        if self.direction.x:
+            self.frame_index += self.animation_speed * delta
+            self.flip = self.direction.x < 0
+        else:
+            self.frame_index = 0
+
+        # lógica para quando o personagem pular
+        self.frames = self.frames_walk if self.on_floor else self.frames_jumping
+
+        self.image = self.frames[int(self.frame_index) % len(self.frames)]
+        self.image = pygame.transform.flip(self.image, self.flip, False)
+
     def update(self, delta):
         self.check_floor()
         self.input()
         self.move(delta)
+        self.animate(delta)

@@ -35,7 +35,6 @@ class Game:
                 pass
                 # self.player = Player((obj.x, obj.y), surf=, self.all_sprites, self.collision_sprites)
 
-
     def run(self):
         delta = self.clock.tick(FRAMERATE) / 1000
         while self.running:
