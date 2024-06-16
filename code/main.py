@@ -14,14 +14,23 @@ class Game:
         pygame.display.set_caption('Bit Debugger')
         self.clock = pygame.time.Clock()
         self.running = True
+        self.menu = True
 
         # Sprites
         self.player = None
 
         # Groups
-        self.all_sprites = AllSprites()
+        self.game_sprites = GameSprites()
         self.collision_sprites = pygame.sprite.Group()
         self.enemy_sprites = pygame.sprite.Group()
+        self.menu_sprites = pygame.sprite.Group()
+
+        # Zoom
+        self.zoom_scale = 1.50
+        self.internal_surf_size = (WINDOW_WIDTH, WINDOW_HEIGHT)
+        self.internal_surf = pygame.Surface(self.internal_surf_size, pygame.SRCALPHA)
+        self.internal_rect = self.internal_surf.get_frect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2))
+        self.internal_surf_size_vector = vector(self.internal_surf_size)
 
         self.load_assets()
         self.setup()
@@ -40,21 +49,21 @@ class Game:
         self.level_height = tmx_map.height * TILE_SIZE
 
         for x, y, image in tmx_map.get_layer_by_name('Floor').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites, self.collision_sprites))
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.game_sprites, self.collision_sprites))
 
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
                 self.player = Player(pos=(obj.x, obj.y),
                                      frames_walk=self.bit_frames_walk,
                                      frames_jumping=self.bit_frames_jump,
-                                     groups=self.all_sprites,
+                                     groups=self.game_sprites,
                                      collision_sprites=self.collision_sprites,
                                      enemy_sprites=self.enemy_sprites)
             if obj.name == 'Worm':
                 self.enemy = CI(rect=pygame.FRect(obj.x, obj.y, obj.width, obj.height),
-                   frames_walk=self.ci_frames_walk,
-                   frames_dead=self.ci_frames_dead,
-                   groups=(self.all_sprites, self.enemy_sprites))
+                                frames_walk=self.ci_frames_walk,
+                                frames_dead=self.ci_frames_dead,
+                                groups=(self.game_sprites, self.enemy_sprites))
 
     def out_border(self):
         if self.player.rect.y > self.level_height + 1000:
@@ -67,15 +76,28 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.K_ESCAPE:
+                    self.menu *= -1
 
-            # Update
-            self.all_sprites.update(delta)
-            self.enemy_sprites.update(delta)
-            self.out_border()
+            if self.menu:
+                self.menu_sprites.update()
+                self.menu_sprites.draw(self.display_surface)
 
-            # Draw
-            self.display_surface.fill('#87ceeb')
-            self.all_sprites.draw(self.player.rect.center)
+            else:
+                # Update
+                self.game_sprites.update(delta)
+                self.enemy_sprites.update(delta)
+                self.out_border()
+
+                # Draw
+                self.internal_surf.fill('#87ceeb')
+                self.game_sprites.draw(self.player.rect.center, self.internal_surf, self.internal_rect)
+
+                # Zoom
+                scaled_surf = pygame.transform.scale(self.internal_surf, self.internal_surf_size_vector * self.zoom_scale)
+                scaled_rect = scaled_surf.get_frect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2))
+                self.display_surface.blit(scaled_surf, scaled_rect)
+
             pygame.display.update()
 
         pygame.quit()

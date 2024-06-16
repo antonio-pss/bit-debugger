@@ -35,7 +35,7 @@ class Player(AnimatedSprite):
         self.collision_sprites = collision_sprites
         self.enemy_sprites = enemy_sprites
         self.direction = vector()
-        self.speed = 400
+        self.speed = 300
         self.gravity = 50
         self.on_floor = False
 

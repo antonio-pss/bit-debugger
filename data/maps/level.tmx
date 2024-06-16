@@ -27,9 +27,8 @@
 </data>
  </layer>
  <objectgroup id="3" name="Entities">
-  <object id="2" name="Player" x="259" y="528">
+  <object id="2" name="Player" x="320" y="495">
    <point/>
   </object>
-  <object id="6" name="Worm" x="1031" y="513" width="657" height="32"/>
  </objectgroup>
 </map>

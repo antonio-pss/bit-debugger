@@ -1,15 +1,16 @@
 from settings import *
 
 
-class AllSprites(pygame.sprite.Group):
+class GameSprites(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
-        self.display_surface = pygame.display.get_surface()
         self.offset = vector()
 
-    def draw(self, target_pos):
-        self.offset.x = -(target_pos[0] - WINDOW_WIDTH/2)
-        self.offset.y = -(target_pos[1] - WINDOW_HEIGHT/2)
+    def draw(self, target_pos, surface, rect):
+        self.offset.x = -(target_pos[0] - surface.get_width()/2)
+        self.offset.y = -(target_pos[1] - surface.get_height()/2)
 
         for sprite in self:
-            self.display_surface.blit(sprite.image, sprite.rect.topleft + self.offset)
+            surface.blit(sprite.image, sprite.rect.topleft + self.offset)
+
+
