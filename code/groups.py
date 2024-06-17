@@ -6,7 +6,7 @@ class GameSprites(pygame.sprite.Group):
         super().__init__()
         self.offset = vector()
 
-    def draw(self, target_pos, surface, rect):
+    def draw(self, target_pos, surface):
         self.offset.x = -(target_pos[0] - surface.get_width()/2)
         self.offset.y = -(target_pos[1] - surface.get_height()/2)
 

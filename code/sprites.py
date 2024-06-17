@@ -156,3 +156,21 @@ class Button(pygame.sprite.Sprite):
         self.text = text
         self.image.blit(text_surf, text_rect)
         self.rect = self.image.get_frect(center=pos)
+
+
+class Question(Sprite):
+    def __init__(self, pos, surf, number, groups):
+        super().__init__(pos, surf, groups)
+
+
+class Text(pygame.sprite.Sprite):
+    def __init__(self, text, size, color, pos, groups):
+        super().__init__(groups)
+        self.font = pygame.font.Font(None, size)
+        self.image = self.font.render(text, False, color)
+        self.rect = self.image.get_frect(center=pos)
+
+        self.timer = Timer(1000, self.kill, None, True)
+
+    def update(self, _):
+        self.timer.update()

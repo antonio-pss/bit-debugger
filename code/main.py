@@ -16,12 +16,14 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.menu = False
+        self.font = pygame.font.Font(None, 16)
 
         # Groups
         self.game_sprites = GameSprites()
         self.collision_sprites = pygame.sprite.Group()
         self.enemy_sprites = pygame.sprite.Group()
         self.menu_sprites = pygame.sprite.Group()
+        self.question_locations = pygame.sprite.Group()
 
         # Zoom
         self.zoom_scale = 1.50
@@ -63,6 +65,8 @@ class Game:
                                 frames_walk=self.ci_frames_walk,
                                 frames_dead=self.ci_frames_dead,
                                 groups=(self.game_sprites, self.enemy_sprites))
+            if obj.name == 'Question':
+                Question((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), 1, self.question_locations)
 
     def setup_menu(self):
         buttons = ['Restart', 'Quit']
@@ -90,6 +94,11 @@ class Game:
                 elif sprite.text == 'Quit':
                     self.running = False
 
+    def check_question(self):
+        for sprite in self.question_locations:
+            if sprite.rect.colliderect(self.player.rect):
+                Text('Press E to start', 16, 'white', sprite.rect.midtop, self.game_sprites)
+
     def run(self):
         while self.running:
             delta = self.clock.tick(FRAMERATE) / 1000
@@ -110,11 +119,13 @@ class Game:
                 # Update
                 self.game_sprites.update(delta)
                 self.enemy_sprites.update(delta)
+                self.question_locations.update(self.player)
                 self.out_border()
+                self.check_question()
 
                 # Draw
                 self.internal_surf.fill('#87ceeb')
-                self.game_sprites.draw(self.player.rect.center, self.internal_surf, self.internal_rect)
+                self.game_sprites.draw(self.player.rect.center, self.internal_surf)
 
                 # Zoom
                 scaled_surf = pygame.transform.scale(self.internal_surf, self.internal_surf_size_vector * self.zoom_scale)

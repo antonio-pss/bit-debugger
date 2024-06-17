@@ -1,16 +1,16 @@
 {
     "activeFile": "maps/level.tmx",
     "expandedProjectPaths": [
-        "maps",
-        "tileset"
+        "tileset",
+        "maps"
     ],
     "fileStates": {
         "maps/level.tmx": {
-            "scale": 0.5,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 854,
-                "y": 368
+                "x": 902.3333333333333,
+                "y": 191.66666666666669
             }
         },
         "tileset/Ground.tsx": {
