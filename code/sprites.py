@@ -1,3 +1,5 @@
+import pygame.sprite
+
 from settings import *
 from timer import Timer
 
@@ -140,3 +142,17 @@ class CI(Enemy):
             self.move(delta)
         self.animate(delta)
         self.constraint()
+
+
+class Button(pygame.sprite.Sprite):
+    def __init__(self, pos, surf, text, groups):
+        super().__init__(groups)
+        self.image = surf
+
+        font = pygame.Font(None, 20)
+        text_surf = font.render(text, True, 'White')
+        text_rect = text_surf.get_frect(center=self.image.get_frect().center)
+
+        self.text = text
+        self.image.blit(text_surf, text_rect)
+        self.rect = self.image.get_frect(center=pos)
