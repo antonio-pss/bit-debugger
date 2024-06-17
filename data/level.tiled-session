@@ -1,0 +1,43 @@
+{
+    "activeFile": "maps/level.tmx",
+    "expandedProjectPaths": [
+        "tileset",
+        "maps"
+    ],
+    "fileStates": {
+        "maps/level.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 817,
+                "y": 238.33333333333331
+            }
+        },
+        "tileset/Ground.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tileset/Objects.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tileset/Objets.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "D:/Estudos/bit-debugger/data/graphics",
+    "openFiles": [
+        "maps/level.tmx",
+        "tileset/Ground.tsx",
+        "tileset/Objects.tsx"
+    ],
+    "project": "level.tiled-project",
+    "recentFiles": [
+        "tileset/Objects.tsx",
+        "tileset/Ground.tsx",
+        "maps/level.tmx",
+        "tileset/Objets.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}
