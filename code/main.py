@@ -17,6 +17,7 @@ class Game:
 
         # States
         self.running = True
+        self.main_menu = True
         self.menu = False
         self.question = False
         self.tip = False
@@ -28,6 +29,7 @@ class Game:
         self.enemy_sprites = pygame.sprite.Group()
 
         # Menu
+        self.main_menu_sprites = pygame.sprite.Group()
         self.menu_sprites = pygame.sprite.Group()
 
         # Questions
@@ -47,7 +49,7 @@ class Game:
 
         self.load_assets()
         self.setup()
-        self.setup_menu()
+        self.setup_main_menu()
 
     def load_assets(self):
         # graphics
@@ -105,6 +107,14 @@ class Game:
                     self.tip = True
                     self.setup_tips()
 
+    def setup_main_menu(self):
+        buttons = ['Start', 'Options', 'Quit']
+        Button((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 150), self.logo, '', self.main_menu_sprites)
+
+        for i, btn in enumerate(buttons):
+            Button((WINDOW_WIDTH / 2, (WINDOW_HEIGHT / 2) + 50 + i * 100), pygame.Surface((200, 50)), btn,
+                   self.main_menu_sprites)
+
     def setup_menu(self):
         buttons = ['Resume', 'Restart', 'Quit']
         Button((WINDOW_WIDTH/2, WINDOW_HEIGHT/2-150), self.logo, '', self.menu_sprites)
@@ -127,11 +137,24 @@ class Game:
 
     def setup_tips(self):
         self.tip_sprites.empty()
-        pass
+        Button((WINDOW_WIDTH/2, WINDOW_HEIGHT/2), pygame.Surface((500, 500)), '', self.tip_sprites)
 
     def out_border(self):
         if self.player.rect.y > self.level_height + 1000:
             self.player.rect.center = self.player.start_pos
+
+    def check_click_main_menu(self):
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_button = pygame.mouse.get_pressed()[0]
+
+        for sprite in self.main_menu_sprites:
+            if sprite.rect.collidepoint(mouse_pos) and mouse_button:
+                if sprite.text == 'Start':
+                    self.main_menu = False
+                if sprite.text == 'Options':
+                    pass
+                if sprite.text == 'Quit':
+                    self.running = False
 
     def check_click_menu(self):
         mouse_pos = pygame.mouse.get_pos()
@@ -145,7 +168,8 @@ class Game:
                     self.player.rect.center = self.player.start_pos
                     self.menu = False
                 elif sprite.text == 'Quit':
-                    self.running = False
+                    self.main_menu = True
+                    self.menu = False
 
     def check_click_question(self):
         mouse_pos = pygame.mouse.get_pos()
@@ -159,9 +183,15 @@ class Game:
                 elif sprite.text == 'Return':
                     self.question = False
 
+    def check_click_tips(self):
+        mouse_click = pygame.mouse.get_pressed()[0]
+        if mouse_click:
+            self.tip = False
+
     def pause(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
+            self.setup_menu()
             self.menu = not self.menu
             self.display_surface.blit(self.gray_background, (0, 0))
 
@@ -173,7 +203,12 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
 
-            if self.menu:
+            if self.main_menu:
+                self.display_surface.fill('#87ceeb')
+                self.main_menu_sprites.update()
+                self.main_menu_sprites.draw(self.display_surface)
+                self.check_click_main_menu()
+            elif self.menu:
                 self.menu_sprites.update()
                 self.menu_sprites.draw(self.display_surface)
                 self.check_click_menu()
@@ -181,6 +216,10 @@ class Game:
                 self.question_sprites.update()
                 self.question_sprites.draw(self.display_surface)
                 self.check_click_question()
+            elif self.tip:
+                self.tip_sprites.update()
+                self.tip_sprites.draw(self.display_surface)
+                self.check_click_tips()
             else:
                 # Update
                 self.game_sprites.update(delta)
