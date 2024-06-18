@@ -152,7 +152,7 @@ class Game:
         keys = pygame.key.get_pressed()
         for sprite in self.tip_locations:
             if sprite.rect.colliderect(self.player.rect):
-                Text('Press E to read', 16, 'white', sprite.rect.midtop, self.game_sprites)
+                Text('Press E to learn', 16, 'white', sprite.rect.midtop, self.game_sprites)
 
     def pause(self):
         keys = pygame.key.get_pressed()
