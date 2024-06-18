@@ -14,9 +14,12 @@ class Game:
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption('Bit Debugger')
         self.clock = pygame.time.Clock()
+
+        # States
         self.running = True
         self.menu = False
         self.question = False
+        self.tip = False
 
         # Groups
         # Game
@@ -59,9 +62,6 @@ class Game:
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
 
-        n_question = 0
-        n_tip = 0
-
         for x, y, image in tmx_map.get_layer_by_name('Floor').tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.game_sprites, self.collision_sprites))
 
@@ -84,10 +84,26 @@ class Game:
             if obj.name == 'Question' or obj.name == 'Tip':
                 Question(pos=(obj.x, obj.y),
                          surf=pygame.Surface((obj.width, obj.height)),
-                         number=n_question if obj.name == 'Question' else n_tip,
+                         number=obj.number,
                          groups=self.question_locations if obj.name == 'Question' else self.tip_locations)
-                n_question += 1 if obj.name == 'Question' else n_question
-                n_tip += 1 if obj.name == 'Tip' else n_tip
+
+    def check_question(self):
+        keys = pygame.key.get_pressed()
+        for sprite in self.question_locations:
+            if sprite.rect.colliderect(self.player.rect):
+                Text('Press E to start', 16, 'white', sprite.rect.midtop, self.game_sprites)
+                if keys[pygame.K_e]:
+                    self.question = True
+                    self.setup_questions()
+
+    def check_tip(self):
+        keys = pygame.key.get_pressed()
+        for sprite in self.tip_locations:
+            if sprite.rect.colliderect(self.player.rect):
+                Text('Press E to learn', 16, 'white', sprite.rect.midtop, self.game_sprites)
+                if keys[pygame.K_e]:
+                    self.tip = True
+                    self.setup_tips()
 
     def setup_menu(self):
         buttons = ['Resume', 'Restart', 'Quit']
@@ -108,6 +124,10 @@ class Game:
 
         for i, button in enumerate(buttons_text):
             Button(buttons_pos[i], pygame.Surface((200, 50)), button, self.question_sprites)
+
+    def setup_tips(self):
+        self.tip_sprites.empty()
+        pass
 
     def out_border(self):
         if self.player.rect.y > self.level_height + 1000:
@@ -138,21 +158,6 @@ class Game:
                     self.menu = False
                 elif sprite.text == 'Return':
                     self.question = False
-
-    def check_question(self):
-        keys = pygame.key.get_pressed()
-        for sprite in self.question_locations:
-            if sprite.rect.colliderect(self.player.rect):
-                Text('Press E to start', 16, 'white', sprite.rect.midtop, self.game_sprites)
-                if keys[pygame.K_e]:
-                    self.question = True
-                    self.setup_questions()
-
-    def check_tip(self):
-        keys = pygame.key.get_pressed()
-        for sprite in self.tip_locations:
-            if sprite.rect.colliderect(self.player.rect):
-                Text('Press E to learn', 16, 'white', sprite.rect.midtop, self.game_sprites)
 
     def pause(self):
         keys = pygame.key.get_pressed()

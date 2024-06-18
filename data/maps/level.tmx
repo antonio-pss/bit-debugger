@@ -2,7 +2,7 @@
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="140" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="15">
  <tileset firstgid="1" source="../tileset/Ground.tsx"/>
  <tileset firstgid="257" source="../tileset/Objects.tsx"/>
- <layer id="1" name="Floor" width="140" height="20">
+ <layer id="1" name="Floor" width="140" height="20" locked="1">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -55,11 +55,27 @@
    <point/>
   </object>
   <object id="3" name="Enemy" x="1472" y="512" width="416" height="32"/>
-  <object id="5" name="Tip" x="832" y="191.75" width="95.6667" height="64.25"/>
-  <object id="8" name="Question" x="2080" y="478.667" width="160.667" height="65.3333"/>
-  <object id="9" name="Question" x="3712" y="256" width="96" height="64"/>
+  <object id="5" name="Tip" x="832" y="191.75" width="95.6667" height="64.25">
+   <properties>
+    <property name="number" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="8" name="Question" x="2080" y="478.667" width="160.667" height="65.3333">
+   <properties>
+    <property name="number" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="9" name="Question" x="3712" y="256" width="96" height="64">
+   <properties>
+    <property name="number" type="int" value="2"/>
+   </properties>
+  </object>
   <object id="10" name="Enemy" x="2432" y="512" width="385.5" height="32"/>
   <object id="11" name="Enemy" x="3328" y="512" width="286" height="32"/>
-  <object id="14" name="Tip" x="2879.92" y="95.875" width="95.6667" height="64.25"/>
+  <object id="14" name="Tip" x="2879.92" y="95.875" width="95.6667" height="64.25">
+   <properties>
+    <property name="number" type="int" value="2"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
