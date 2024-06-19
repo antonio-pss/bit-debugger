@@ -31,6 +31,7 @@ class Player(AnimatedSprite):
         # frames
         self.frames_jumping = frames_jumping
         self.frames_walk = frames_walk
+        self.animation_speed = 12
 
         # movement & collision
         self.start_pos = pos
@@ -40,8 +41,6 @@ class Player(AnimatedSprite):
         self.speed = 300
         self.gravity = 50
         self.on_floor = False
-
-        # timer
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -90,12 +89,12 @@ class Player(AnimatedSprite):
 
     def check_enemy_collision(self):
         for enemy in self.enemy_sprites:
-            if self.rect.colliderect(enemy.rect):
-                if self.rect.bottom < enemy.rect.top + enemy.rect.height / 2 and self.direction.y > 0:
+            if self.rect.colliderect(enemy.rect) and not enemy.death_timer:
+                if self.rect.bottom < enemy.rect.top + enemy.rect.height and self.direction.y > 0:
                     enemy.destroy()
                     self.direction.y = -10
                 else:
-                    self.rect.topleft = self.start_pos
+                    self.rect.center = self.start_pos
 
     def update(self, delta):
         self.check_floor()
@@ -126,10 +125,10 @@ class CI(Enemy):
 
         # movement
         self.direction = 1
-        self.speed = 100
+        self.speed = 50
 
     def move(self, delta):
-        self.rect.x -= self.direction * self.speed * delta
+        self.rect.x += self.direction * self.speed * delta
 
     def constraint(self):
         if not self.main_rect.contains(self.rect):
@@ -174,3 +173,32 @@ class Text(pygame.sprite.Sprite):
 
     def update(self, _):
         self.timer.update()
+
+
+class TipText(pygame.sprite.Sprite):
+    def __init__(self, text, size, color, pos, groups):
+        super().__init__(groups)
+        self.display_surface = pygame.display.get_surface()
+        self.timer = Timer(250)
+        self.all_text = text
+        self.text = text[0]
+        self.text_index = 0
+        self.color = color
+
+        self.font = pygame.font.Font(None, size)
+        self.image = self.font.render(self.text, False, color)
+        self.rect = self.image.get_frect(topleft=pos)
+
+    def check_border(self):
+        if self.rect.right > self.display_surface.get_width():
+            pass
+
+    def update(self, _):
+        if not self.timer:
+            self.timer.activate()
+            self.text_index += 1
+            if self.text_index < len(self.all_text):
+                self.text = self.all_text[self.text_index] % len(self.all_text)
+                self.image = self.font.render(self.text, False, self.color)
+        else:
+            self.timer.update()

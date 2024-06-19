@@ -11,7 +11,7 @@ class Game:
     def __init__(self):
         # Setup
         pygame.init()
-        self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
         pygame.display.set_caption('Bit Debugger')
         self.clock = pygame.time.Clock()
 
@@ -41,10 +41,10 @@ class Game:
         self.tip_sprites = pygame.sprite.Group()
 
         # Zoom
-        self.zoom_scale = 1.60
+        self.zoom_scale = 2
         self.internal_surf_size = (WINDOW_WIDTH, WINDOW_HEIGHT)
         self.internal_surf = pygame.Surface(self.internal_surf_size, pygame.SRCALPHA)
-        self.internal_rect = self.internal_surf.get_frect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2))
+        self.internal_rect = self.internal_surf.get_frect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
         self.internal_surf_size_vector = vector(self.internal_surf_size)
 
         self.load_assets()
@@ -117,10 +117,11 @@ class Game:
 
     def setup_menu(self):
         buttons = ['Resume', 'Restart', 'Quit']
-        Button((WINDOW_WIDTH/2, WINDOW_HEIGHT/2-150), self.logo, '', self.menu_sprites)
+        Button((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 150), self.logo, '', self.menu_sprites)
 
         for i, button in enumerate(buttons):
-            Button((WINDOW_WIDTH/2, (WINDOW_HEIGHT/2)+50+i*100), pygame.Surface((200, 50)), button, self.menu_sprites)
+            Button((WINDOW_WIDTH / 2, (WINDOW_HEIGHT / 2) + 50 + i * 100), pygame.Surface((200, 50)), button,
+                   self.menu_sprites)
 
         self.gray_background = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
         self.gray_background.fill((0, 0, 0, 128))
@@ -128,16 +129,16 @@ class Game:
     def setup_questions(self):
         self.question_sprites.empty()
         buttons_text = ['1', '2', '3', '4', 'Return']
-        buttons_pos = [(WINDOW_WIDTH*0.25, WINDOW_HEIGHT*0.65), (WINDOW_WIDTH*0.25, WINDOW_HEIGHT*0.75),
-                       (WINDOW_WIDTH*0.75, WINDOW_HEIGHT*0.65), (WINDOW_WIDTH*0.75, WINDOW_HEIGHT*0.75),
-                       (WINDOW_WIDTH*0.1, WINDOW_HEIGHT*0.1)]
+        buttons_pos = [(WINDOW_WIDTH * 0.25, WINDOW_HEIGHT * 0.65), (WINDOW_WIDTH * 0.25, WINDOW_HEIGHT * 0.75),
+                       (WINDOW_WIDTH * 0.75, WINDOW_HEIGHT * 0.65), (WINDOW_WIDTH * 0.75, WINDOW_HEIGHT * 0.75),
+                       (WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.1)]
 
         for i, button in enumerate(buttons_text):
             Button(buttons_pos[i], pygame.Surface((200, 50)), button, self.question_sprites)
 
     def setup_tips(self):
         self.tip_sprites.empty()
-        Button((WINDOW_WIDTH/2, WINDOW_HEIGHT/2), pygame.Surface((500, 500)), '', self.tip_sprites)
+        Button((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), pygame.Surface((500, 500)), '', self.tip_sprites)
 
     def out_border(self):
         if self.player.rect.y > self.level_height + 1000:
@@ -151,7 +152,7 @@ class Game:
             if sprite.rect.collidepoint(mouse_pos) and mouse_button:
                 if sprite.text == 'Start':
                     self.main_menu = False
-                if sprite.text == 'Options':
+                if sprite.text == 'About':
                     pass
                 if sprite.text == 'Quit':
                     self.running = False
@@ -168,8 +169,8 @@ class Game:
                     self.player.rect.center = self.player.start_pos
                     self.menu = False
                 elif sprite.text == 'Quit':
-                    self.main_menu = True
                     self.menu = False
+                    self.main_menu = True
 
     def check_click_question(self):
         mouse_pos = pygame.mouse.get_pos()
@@ -235,8 +236,9 @@ class Game:
                 self.game_sprites.draw(self.player.rect.center, self.internal_surf)
 
                 # Zoom
-                scaled_surf = pygame.transform.scale(self.internal_surf, self.internal_surf_size_vector * self.zoom_scale)
-                scaled_rect = scaled_surf.get_frect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2))
+                scaled_surf = pygame.transform.scale(self.internal_surf,
+                                                     self.internal_surf_size_vector * self.zoom_scale)
+                scaled_rect = scaled_surf.get_frect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
                 self.display_surface.blit(scaled_surf, scaled_rect)
 
             pygame.display.update()
