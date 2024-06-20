@@ -1,3 +1,4 @@
+import psycopg2
 import pygame.mixer
 
 from settings import *
@@ -26,3 +27,10 @@ def audio_importer(*path):
             full_path = join(folder_path, file_name)
             audio_dict[file_name.split('.')[0]] = pygame.mixer.Sound(full_path)
     return audio_dict
+
+
+def sql_importer(command):
+    conn = psycopg2.connect('dbname=test user=postgres')
+    cur = conn.cursor()
+    cur.excute(command)
+    return cur.fetchall()

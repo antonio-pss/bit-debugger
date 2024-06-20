@@ -14,3 +14,10 @@ class GameSprites(pygame.sprite.Group):
             surface.blit(sprite.image, sprite.rect.topleft + self.offset)
 
 
+class States(pygame.sprite.Group):
+    def __init__(self):
+        super().__init__()
+        self.active = False
+
+    def setup(self):
+        pass
