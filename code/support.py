@@ -30,7 +30,9 @@ def audio_importer(*path):
 
 
 def sql_importer(command):
-    conn = psycopg2.connect('dbname=test user=postgres')
+    conn = psycopg2.connect('host=localhost dbname=windows user=postgres password=123456')
     cur = conn.cursor()
-    cur.excute(command)
-    return cur.fetchall()
+    cur.execute(command)
+    records = cur.fetchall()
+    columns = [column[0] for column in cur.description]
+    return [dict(zip(columns, row)) for row in records]

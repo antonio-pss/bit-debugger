@@ -19,5 +19,13 @@ class States(pygame.sprite.Group):
         super().__init__()
         self.active = False
 
-    def setup(self):
-        pass
+    def setup(self, command):
+        rows = sql_importer(command)
+
+        for row in rows:
+            if row['surf_path']:
+                path = row['surf_path'].split('|')
+                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), pygame.image.load(join(path)), row['Text'], self)
+            else:
+                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), pygame.Surface((200, 50)), row['Text'], self)
+

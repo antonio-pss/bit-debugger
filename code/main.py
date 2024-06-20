@@ -109,19 +109,19 @@ class Game:
 
     def setup_main_menu(self):
         buttons = ['Start', 'Options', 'Quit']
-        Button((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 150), self.logo, '', self.main_menu_sprites)
+        Frame((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 150), self.logo, '', self.main_menu_sprites)
 
         for i, btn in enumerate(buttons):
-            Button((WINDOW_WIDTH / 2, (WINDOW_HEIGHT / 2) + 50 + i * 100), pygame.Surface((200, 50)), btn,
-                   self.main_menu_sprites)
+            Frame((WINDOW_WIDTH / 2, (WINDOW_HEIGHT / 2) + 50 + i * 100), pygame.Surface((200, 50)), btn,
+                  self.main_menu_sprites)
 
     def setup_menu(self):
         buttons = ['Resume', 'Restart', 'Quit']
-        Button((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 150), self.logo, '', self.menu_sprites)
+        Frame((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 150), self.logo, '', self.menu_sprites)
 
         for i, button in enumerate(buttons):
-            Button((WINDOW_WIDTH / 2, (WINDOW_HEIGHT / 2) + 50 + i * 100), pygame.Surface((200, 50)), button,
-                   self.menu_sprites)
+            Frame((WINDOW_WIDTH / 2, (WINDOW_HEIGHT / 2) + 50 + i * 100), pygame.Surface((200, 50)), button,
+                  self.menu_sprites)
 
         self.gray_background = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
         self.gray_background.fill((0, 0, 0, 128))
@@ -134,11 +134,11 @@ class Game:
                        (WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.1)]
 
         for i, button in enumerate(buttons_text):
-            Button(buttons_pos[i], pygame.Surface((200, 50)), button, self.question_sprites)
+            Frame(buttons_pos[i], pygame.Surface((200, 50)), button, self.question_sprites)
 
     def setup_tips(self):
         self.tip_sprites.empty()
-        Button((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), pygame.Surface((500, 500)), '', self.tip_sprites)
+        Frame((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), pygame.Surface((500, 500)), '', self.tip_sprites)
 
     def out_border(self):
         if self.player.rect.y > self.level_height + 1000:
