@@ -1,7 +1,7 @@
 import psycopg2
 import pygame.mixer
-
 from settings import *
+from os.path import join
 
 
 def import_image(*path, frmt='png', alpha=True):

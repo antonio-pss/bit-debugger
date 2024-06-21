@@ -14,31 +14,23 @@ class Game:
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
         pygame.display.set_caption('Bit Debugger')
         self.clock = pygame.time.Clock()
-
-        # States
         self.running = True
-        self.main_menu = True
-        self.menu = False
-        self.question = False
-        self.tip = False
+        self.state = 'main_menu'
 
         # Groups
-        # Game
-        self.game_sprites = GameSprites()
-        self.collision_sprites = pygame.sprite.Group()
-        self.enemy_sprites = pygame.sprite.Group()
-
-        # Menu
-        self.main_menu_sprites = pygame.sprite.Group()
-        self.menu_sprites = pygame.sprite.Group()
-
-        # Questions
-        self.question_locations = pygame.sprite.Group()
-        self.question_sprites = pygame.sprite.Group()
-
-        # Tips
-        self.tip_locations = pygame.sprite.Group()
-        self.tip_sprites = pygame.sprite.Group()
+        self.states = {
+            'main_menu': States('main_menu'),
+            'menu': States('menu'),
+            'questions': States('questions'),
+            'tip': States('tip')
+        }
+        self.groups = {
+            'game': GameSprites(),
+            'collision': pygame.sprite.Group(),
+            'enemy': pygame.sprite.Group(),
+            'questions_locations': pygame.sprite.Group(),
+            'tip_locations': pygame.sprite.Group()
+        }
 
         # Zoom
         self.zoom_scale = 2
@@ -47,9 +39,12 @@ class Game:
         self.internal_rect = self.internal_surf.get_frect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
         self.internal_surf_size_vector = vector(self.internal_surf_size)
 
+        self.gray_background = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        self.gray_background.fill((0, 0, 0, 128))
+
         self.load_assets()
         self.setup()
-        self.setup_main_menu()
+
 
     def load_assets(self):
         # graphics
@@ -60,71 +55,56 @@ class Game:
         self.ci_frames_dead = import_folder('..', 'images', 'enemy', 'ci', 'ci-dead')
 
     def setup(self):
+        self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
+        self.states['main_menu'].active = True
+        self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
+
         tmx_map = load_pygame(join('..', 'data', 'maps', 'level.tmx'))
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
 
         for x, y, image in tmx_map.get_layer_by_name('Floor').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.game_sprites, self.collision_sprites))
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.groups['game'], self.groups['collision']))
 
         for x, y, image in tmx_map.get_layer_by_name('Props').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.game_sprites)
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
 
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
                 self.player = Player(pos=(obj.x, obj.y),
                                      frames_walk=self.bit_frames_walk,
                                      frames_jumping=self.bit_frames_jump,
-                                     groups=self.game_sprites,
-                                     collision_sprites=self.collision_sprites,
-                                     enemy_sprites=self.enemy_sprites)
+                                     groups=self.groups['game'],
+                                     collision_sprites=self.groups['collision'],
+                                     enemy_sprites=self.groups['enemy'])
             if obj.name == 'Enemy':
                 self.enemy = CI(rect=pygame.FRect(obj.x, obj.y, obj.width, obj.height),
                                 frames_walk=self.ci_frames_walk,
                                 frames_dead=self.ci_frames_dead,
-                                groups=(self.game_sprites, self.enemy_sprites))
+                                groups=(self.groups['game'], self.groups['enemy']))
             if obj.name == 'Question' or obj.name == 'Tip':
                 Question(pos=(obj.x, obj.y),
                          surf=pygame.Surface((obj.width, obj.height)),
                          number=obj.number,
-                         groups=self.question_locations if obj.name == 'Question' else self.tip_locations)
+                         groups=self.groups['questions_locations'] if obj.name == 'Question' else self.groups['tip_locations'])
 
     def check_question(self):
         keys = pygame.key.get_pressed()
-        for sprite in self.question_locations:
+        for sprite in self.groups['questions_locations']:
             if sprite.rect.colliderect(self.player.rect):
-                Text('Press E to start', 16, 'white', sprite.rect.midtop, self.game_sprites)
+                Text('Press E to start', 16, 'white', sprite.rect.midtop, self.groups['game'])
                 if keys[pygame.K_e]:
                     self.question = True
                     self.setup_questions()
 
     def check_tip(self):
         keys = pygame.key.get_pressed()
-        for sprite in self.tip_locations:
+        for sprite in self.groups['tip_locations']:
             if sprite.rect.colliderect(self.player.rect):
-                Text('Press E to learn', 16, 'white', sprite.rect.midtop, self.game_sprites)
+                Text('Press E to learn', 16, 'white', sprite.rect.midtop, self.groups['game'])
                 if keys[pygame.K_e]:
                     self.tip = True
                     self.setup_tips()
-
-    def setup_main_menu(self):
-        buttons = ['Start', 'Options', 'Quit']
-        Frame((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 150), self.logo, '', self.main_menu_sprites)
-
-        for i, btn in enumerate(buttons):
-            Frame((WINDOW_WIDTH / 2, (WINDOW_HEIGHT / 2) + 50 + i * 100), pygame.Surface((200, 50)), btn,
-                  self.main_menu_sprites)
-
-    def setup_menu(self):
-        buttons = ['Resume', 'Restart', 'Quit']
-        Frame((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 150), self.logo, '', self.menu_sprites)
-
-        for i, button in enumerate(buttons):
-            Frame((WINDOW_WIDTH / 2, (WINDOW_HEIGHT / 2) + 50 + i * 100), pygame.Surface((200, 50)), button,
-                  self.menu_sprites)
-
-        self.gray_background = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
-        self.gray_background.fill((0, 0, 0, 128))
 
     def setup_questions(self):
         self.question_sprites.empty()
@@ -144,34 +124,6 @@ class Game:
         if self.player.rect.y > self.level_height + 1000:
             self.player.rect.center = self.player.start_pos
 
-    def check_click_main_menu(self):
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_button = pygame.mouse.get_pressed()[0]
-
-        for sprite in self.main_menu_sprites:
-            if sprite.rect.collidepoint(mouse_pos) and mouse_button:
-                if sprite.text == 'Start':
-                    self.main_menu = False
-                if sprite.text == 'About':
-                    pass
-                if sprite.text == 'Quit':
-                    self.running = False
-
-    def check_click_menu(self):
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_button = pygame.mouse.get_pressed()[0]
-
-        for sprite in self.menu_sprites:
-            if sprite.rect.collidepoint(mouse_pos) and mouse_button:
-                if sprite.text == 'Resume':
-                    self.menu = False
-                elif sprite.text == 'Restart':
-                    self.player.rect.center = self.player.start_pos
-                    self.menu = False
-                elif sprite.text == 'Quit':
-                    self.menu = False
-                    self.main_menu = True
-
     def check_click_question(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_button = pygame.mouse.get_pressed()[0]
@@ -189,58 +141,74 @@ class Game:
         if mouse_click:
             self.tip = False
 
+    def check(self):
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_button = pygame.mouse.get_pressed()[0]
+
+        for state in self.states.values():
+            if state.active:
+                for sprite in state:
+                    if sprite.rect.collidepoint(mouse_pos) and mouse_button:
+                        if state.name == 'main_menu':
+                            if sprite.text == 'Start':
+                                state.active = False
+                            if sprite.text == 'Options':
+                                pass
+                            if sprite.text == 'Quit':
+                                self.running = False
+                        elif state.name == 'menu':
+                            if sprite.text == 'Resume':
+                                state.active = False
+                            if sprite.text == 'Restart':
+                                self.player.rect.center = self.player.start_pos
+                                state.active = False
+                            if sprite.text == 'Quit':
+                                state.active = False
+                                self.states['main_menu'].active = True
+                        elif state.name == 'question':
+                            if not sprite.answer:
+                                self.player.rect.center = self.player.start_pos
+
+    def check_state(self):
+        for state in self.states.values():
+            if state.active: self.state = state.name
+
     def pause(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
-            self.setup_menu()
-            self.menu = not self.menu
+            self.states['menu'].active = not self.states['menu'].active
             self.display_surface.blit(self.gray_background, (0, 0))
 
     def run(self):
         while self.running:
             delta = self.clock.tick(FRAMERATE) / 1000
-            # End
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
 
-            if self.main_menu:
-                self.display_surface.fill('#87ceeb')
-                self.main_menu_sprites.update()
-                self.main_menu_sprites.draw(self.display_surface)
-                self.check_click_main_menu()
-            elif self.menu:
-                self.menu_sprites.update()
-                self.menu_sprites.draw(self.display_surface)
-                self.check_click_menu()
-            elif self.question:
-                self.question_sprites.update()
-                self.question_sprites.draw(self.display_surface)
-                self.check_click_question()
-            elif self.tip:
-                self.tip_sprites.update()
-                self.tip_sprites.draw(self.display_surface)
-                self.check_click_tips()
+            if self.states[self.state].active:
+                if self.states[self.state].name == 'main_menu':
+                    self.display_surface.fill('#87ceeb')
+                self.states[self.state].draw(self.display_surface)
+                self.check()
             else:
-                # Update
-                self.game_sprites.update(delta)
-                self.enemy_sprites.update(delta)
-                self.question_locations.update(self.player)
+                self.groups['game'].update(delta)
+                self.groups['enemy'].update(delta)
+                self.groups['questions_locations'].update(self.player)
                 self.out_border()
                 self.check_question()
                 self.check_tip()
                 self.pause()
 
-                # Draw
                 self.internal_surf.fill('#87ceeb')
-                self.game_sprites.draw(self.player.rect.center, self.internal_surf)
+                self.groups['game'].draw(self.player.rect.center, self.internal_surf)
 
                 # Zoom
-                scaled_surf = pygame.transform.scale(self.internal_surf,
-                                                     self.internal_surf_size_vector * self.zoom_scale)
+                scaled_surf = pygame.transform.scale(self.internal_surf, self.internal_surf_size_vector * self.zoom_scale)
                 scaled_rect = scaled_surf.get_frect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
                 self.display_surface.blit(scaled_surf, scaled_rect)
 
+            self.check_state()
             pygame.display.update()
 
         pygame.quit()
