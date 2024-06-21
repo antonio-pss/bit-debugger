@@ -143,7 +143,7 @@ class CI(Enemy):
         self.constraint()
 
 
-class Button(pygame.sprite.Sprite):
+class Frame(pygame.sprite.Sprite):
     def __init__(self, pos, surf, text, groups):
         super().__init__(groups)
         self.image = surf

@@ -5,6 +5,8 @@ from os.path import join
 from os import walk
 import tkinter as tk
 import psycopg2
+from support import *
+from sprites import *
 
 LEVEL = 0
 WINDOW_WIDTH, WINDOW_HEIGHT = tk.Tk().winfo_screenwidth(), tk.Tk().winfo_screenheight()
