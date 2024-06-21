@@ -184,10 +184,10 @@ class Dialog(pygame.sprite.Sprite):
         super().__init__(groups)
         # Settings
         self.color = color
-        self.all_text = text.split(' ')
+        self.all_text = text
         self.size = size
         self.pos = pos
-        self.timer = Timer(100)
+        self.timer = Timer(10)
 
         self.line = 0
         self.column = 0
@@ -205,15 +205,12 @@ class Dialog(pygame.sprite.Sprite):
         self.image.blit(self.text_surf, (50, 50))
 
     def check_borders(self):
-        self.line = self.line + (len(self.all_text[self.text_index]) * (self.size/2))
+        self.line += self.size/2.75
 
-        if self.line > self.image.get_width() - 50:
+        if self.line > self.image.get_width() - 50 and self.all_text[self.text_index+1] == ' ':
+            self.all_text = self.all_text[:self.text_index+1] + self.all_text[self.text_index+2:]
             self.text += '\n'
             self.line = 0
-
-    def lettering(self):
-        for letter in self.all_text[self.text_index]:
-            self.text += letter
 
     def update(self):
         if self.text_index < len(self.all_text)-1 and self.text[-3:] != '...' and not self.timer:
@@ -221,12 +218,7 @@ class Dialog(pygame.sprite.Sprite):
             self.check_borders()
             self.text_index += 1
 
-            if self.line != 0:
-                self.text += ' '
-                self.lettering()
-            else:
-                self.text += ' '
-                self.lettering()
+            self.text += self.all_text[self.text_index]
 
             self.text_surf = self.font.render(self.text, False, self.color)
             self.image.blit(self.text_surf, (50, 50))
