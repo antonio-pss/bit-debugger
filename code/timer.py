@@ -1,5 +1,3 @@
-import pygame.time
-
 from settings import *
 
 

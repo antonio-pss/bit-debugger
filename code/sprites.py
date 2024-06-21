@@ -1,14 +1,14 @@
-import pygame.sprite
-
 from settings import *
 from timer import Timer
 
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, pos, surf, groups):
+    def __init__(self, pos, surf, groups, number=0, name=''):
         super().__init__(groups)
         self.image = surf
         self.rect = self.image.get_frect(topleft=pos)
+        self.number = number
+        self.name = name
 
 
 class AnimatedSprite(Sprite):
@@ -71,7 +71,12 @@ class Player(AnimatedSprite):
 
     def check_floor(self):
         bottom_rect = pygame.FRect((0, 0), (self.rect.width, 2)).move_to(midtop=self.rect.midbottom)
-        self.on_floor = True if bottom_rect.collidelist([sprite.rect for sprite in self.collision_sprites]) >= 0 else False
+        self.on_floor = True if bottom_rect.collidelist(
+            [sprite.rect for sprite in self.collision_sprites]) >= 0 else False
+
+    def check_border(self, level_height):
+        if self.rect.y > level_height + 1000:
+            self.rect.center = self.start_pos
 
     def animate(self, delta):
         # personagem virar quando andar
@@ -96,8 +101,9 @@ class Player(AnimatedSprite):
                 else:
                     self.rect.center = self.start_pos
 
-    def update(self, delta):
+    def update(self, delta, level_height):
         self.check_floor()
+        self.check_border(level_height)
         self.input()
         self.move(delta)
         self.check_enemy_collision()
@@ -135,7 +141,7 @@ class CI(Enemy):
             self.direction *= -1
             self.frames = [pygame.transform.flip(surf, True, False) for surf in self.frames]
 
-    def update(self, delta):
+    def update(self, delta, _):
         self.death_timer.update()
         if not self.death_timer:
             self.move(delta)
@@ -157,11 +163,6 @@ class Frame(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(center=pos)
 
 
-class Question(Sprite):
-    def __init__(self, pos, surf, number, groups):
-        super().__init__(pos, surf, groups)
-
-
 class Text(pygame.sprite.Sprite):
     def __init__(self, text, size, color, pos, groups):
         super().__init__(groups)
@@ -178,27 +179,36 @@ class Text(pygame.sprite.Sprite):
 class TipText(pygame.sprite.Sprite):
     def __init__(self, text, size, color, pos, groups):
         super().__init__(groups)
-        self.display_surface = pygame.display.get_surface()
-        self.timer = Timer(250)
+        self.timer = Timer(50)
         self.all_text = text
         self.text = text[0]
         self.text_index = 0
         self.color = color
+        self.pos = pos
 
         self.font = pygame.font.Font(None, size)
         self.image = self.font.render(self.text, False, color)
         self.rect = self.image.get_frect(topleft=pos)
 
     def check_border(self):
-        if self.rect.right > self.display_surface.get_width():
-            pass
+        text = self.text + self.all_text[self.text_index % len(self.all_text)]
+        image = self.font.render(text, False, self.color)
+        rect = image.get_frect(topleft=self.pos)
 
-    def update(self, _):
+        if rect.right > WINDOW_WIDTH - 100:
+            next_index = (self.text_index+1) % len(self.all_text)
+            if self.all_text[next_index] == ' ':
+                self.all_text = self.all_text[:next_index] + self.all_text[next_index + 1:]
+            self.text += '\n'
+            self.pos = (self.pos[0], self.pos[1] + self.font.get_linesize())
+
+    def update(self):
         if not self.timer:
             self.timer.activate()
             self.text_index += 1
             if self.text_index < len(self.all_text):
-                self.text = self.all_text[self.text_index] % len(self.all_text)
+                self.text += self.all_text[self.text_index % len(self.all_text)]
                 self.image = self.font.render(self.text, False, self.color)
+                self.check_border()
         else:
             self.timer.update()

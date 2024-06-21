@@ -1,5 +1,8 @@
+import pygame
+
 from settings import *
-import os
+from support import *
+from sprites import *
 
 
 class GameSprites(pygame.sprite.Group):
@@ -9,8 +12,8 @@ class GameSprites(pygame.sprite.Group):
         self.active = False
 
     def draw(self, target_pos, surface):
-        self.offset.x = -(target_pos[0] - surface.get_width()/2)
-        self.offset.y = -(target_pos[1] - surface.get_height()/2)
+        self.offset.x = -(target_pos[0] - surface.get_width() / 2)
+        self.offset.y = -(target_pos[1] - surface.get_height() / 2)
 
         for sprite in self:
             surface.blit(sprite.image, sprite.rect.topleft + self.offset)
@@ -26,8 +29,35 @@ class States(pygame.sprite.Group):
         rows = sql_importer(command)
 
         for row in rows:
-            if row['surf_path'] != '':
-                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_image(*row['surf_path'].split('|')),
-                      row['text'], self)
+            if self.name == 'tips':
+                TipText(row['text'], 100, 'White', (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
+                Sprite((0, 0), pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA), self)
+            elif self.name == 'questions':
+                pass
+            elif row['surf_path'] != '':
+                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_image(*row['surf_path'].split('|')), row['text'], self)
             else:
                 Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), pygame.Surface((200, 50)), row['text'], self)
+
+
+class Locations(pygame.sprite.Group):
+    def __init__(self):
+        super().__init__()
+
+    def update(self, player, tip, question):
+        key = pygame.key.get_just_pressed()[pygame.K_e]
+
+        for sprite in self:
+            if player.rect.colliderect(sprite.rect):
+                if sprite.name == 'tip' and key:
+                    tip.empty()
+                    tip.setup(f"select * from frame f inner join display d on f.id_display = d.id "
+                              f"where d.name = 'Tip' and d.level = {LEVEL} and d.number = {sprite.number}")
+                    tip.active = True
+                elif sprite.name == 'question':
+                    question.empty()
+                    question.setup(f"select * from frame f inner join display d on f.id_display = d.id "
+                                   f"where d.name = 'Question' and d.level = {LEVEL} and d.number = {sprite.number}")
+                    question.active = True
+
+
