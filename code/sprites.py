@@ -1,3 +1,5 @@
+import pygame
+
 from settings import *
 from timer import Timer
 
@@ -8,7 +10,7 @@ class Sprite(pygame.sprite.Sprite):
         self.image = surf
         self.rect = self.image.get_frect(topleft=pos)
         self.number = number
-        self.name = name
+        self.text = name
 
 
 class AnimatedSprite(Sprite):
@@ -150,9 +152,10 @@ class CI(Enemy):
 
 
 class Frame(pygame.sprite.Sprite):
-    def __init__(self, pos, surf, text, groups):
+    def __init__(self, pos, surf, text, groups, answer=False):
         super().__init__(groups)
         self.image = surf
+        self.answer = answer
 
         font = pygame.Font(None, 20)
         text_surf = font.render(text, True, 'White')
@@ -176,39 +179,56 @@ class Text(pygame.sprite.Sprite):
         self.timer.update()
 
 
-class TipText(pygame.sprite.Sprite):
-    def __init__(self, text, size, color, pos, groups):
+class Dialog(pygame.sprite.Sprite):
+    def __init__(self, text, size, surf, color, pos, groups):
         super().__init__(groups)
-        self.timer = Timer(50)
-        self.all_text = text
-        self.text = text[0]
-        self.text_index = 0
+        # Settings
         self.color = color
+        self.all_text = text.split(' ')
+        self.size = size
         self.pos = pos
+        self.timer = Timer(100)
 
-        self.font = pygame.font.Font(None, size)
-        self.image = self.font.render(self.text, False, color)
-        self.rect = self.image.get_frect(topleft=pos)
+        self.line = 0
+        self.column = 0
 
-    def check_border(self):
-        text = self.text + self.all_text[self.text_index % len(self.all_text)]
-        image = self.font.render(text, False, self.color)
-        rect = image.get_frect(topleft=self.pos)
+        # Text
+        self.text_index = 0
+        self.letter_index = 0
+        self.text = self.all_text[self.text_index]
+        self.font = pygame.Font(None, 50)
+        self.text_surf = self.font.render(self.text, False, color)
 
-        if rect.right > WINDOW_WIDTH - 100:
-            next_index = (self.text_index+1) % len(self.all_text)
-            if self.all_text[next_index] == ' ':
-                self.all_text = self.all_text[:next_index] + self.all_text[next_index + 1:]
+        # Sprite
+        self.image = surf
+        self.rect = self.image.get_frect(center=pos)
+        self.image.blit(self.text_surf, (50, 50))
+
+    def check_borders(self):
+        self.line = self.line + (len(self.all_text[self.text_index]) * (self.size/2))
+
+        if self.line > self.image.get_width() - 50:
             self.text += '\n'
-            self.pos = (self.pos[0], self.pos[1] + self.font.get_linesize())
+            self.line = 0
+
+    def lettering(self):
+        for letter in self.all_text[self.text_index]:
+            self.text += letter
 
     def update(self):
-        if not self.timer:
+        if self.text_index < len(self.all_text)-1 and self.text[-3:] != '...' and not self.timer:
             self.timer.activate()
+            self.check_borders()
             self.text_index += 1
-            if self.text_index < len(self.all_text):
-                self.text += self.all_text[self.text_index % len(self.all_text)]
-                self.image = self.font.render(self.text, False, self.color)
-                self.check_border()
+
+            if self.line != 0:
+                self.text += ' '
+                self.lettering()
+            else:
+                self.text += ' '
+                self.lettering()
+
+            self.text_surf = self.font.render(self.text, False, self.color)
+            self.image.blit(self.text_surf, (50, 50))
         else:
             self.timer.update()

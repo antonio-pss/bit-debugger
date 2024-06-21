@@ -50,8 +50,8 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="2" name="Entities" locked="1">
-  <object id="1" name="Player" x="320" y="480">
+ <objectgroup id="2" name="Entities">
+  <object id="1" name="Player" x="882" y="157.333">
    <point/>
   </object>
   <object id="3" name="Enemy" x="1472" y="512" width="416" height="32"/>
@@ -60,7 +60,7 @@
     <property name="number" type="int" value="1"/>
    </properties>
   </object>
-  <object id="8" name="Question" x="2080" y="478.667" width="160.667" height="65.3333">
+  <object id="8" name="Question" x="2111" y="478.667" width="97.667" height="65.3333">
    <properties>
     <property name="number" type="int" value="1"/>
    </properties>

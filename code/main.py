@@ -13,6 +13,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.state = 'main_menu'
+        self.questions = 0
 
         # Groups
         self.states = {
@@ -45,7 +46,7 @@ class Game:
 
     def setup(self):
         self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
-        self.states['main_menu'].active = True
+        #self.states['main_menu'].active = True
         self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
 
         tmx_map = load_pygame(join('..', 'data', 'maps', 'level.tmx'))
@@ -78,28 +79,6 @@ class Game:
                        number=obj.number,
                        name='question' if obj.name == 'Question' else 'tip')
 
-    def setup_questions(self):
-        self.question_sprites.empty()
-        buttons_text = ['1', '2', '3', '4', 'Return']
-        buttons_pos = [(WINDOW_WIDTH * 0.25, WINDOW_HEIGHT * 0.65), (WINDOW_WIDTH * 0.25, WINDOW_HEIGHT * 0.75),
-                       (WINDOW_WIDTH * 0.75, WINDOW_HEIGHT * 0.65), (WINDOW_WIDTH * 0.75, WINDOW_HEIGHT * 0.75),
-                       (WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.1)]
-
-        for i, button in enumerate(buttons_text):
-            Frame(buttons_pos[i], pygame.Surface((200, 50)), button, self.question_sprites)
-
-    def check_click_question(self):
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_button = pygame.mouse.get_pressed()[0]
-
-        for sprite in self.question_sprites:
-            if sprite.rect.collidepoint(mouse_pos) and mouse_button:
-                if sprite.text == 'Restart':
-                    self.player.rect.center = self.player.start_pos
-                    self.menu = False
-                elif sprite.text == 'Return':
-                    self.question = False
-
     def check_menu(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_button = pygame.mouse.get_pressed()[0]
@@ -109,12 +88,10 @@ class Game:
                 for sprite in state:
                     if sprite.rect.collidepoint(mouse_pos) and mouse_button:
                         if state.name == 'main_menu':
-                            if sprite.text == 'Start':
-                                state.active = False
-                            if sprite.text == 'Options':
+                            if sprite.text == 'Start': state.active = False
+                            if sprite.text == 'About':
                                 pass
-                            if sprite.text == 'Quit':
-                                self.running = False
+                            if sprite.text == 'Quit': self.running = False
                         elif state.name == 'menu':
                             if sprite.text == 'Resume':
                                 state.active = False
@@ -127,8 +104,9 @@ class Game:
                         elif state.name == 'questions':
                             if not sprite.answer:
                                 self.player.rect.center = self.player.start_pos
-                        elif state.name == 'tips':
-                            state.active = False
+                            else:
+                                self.questions += 1
+                        elif state.name == 'tips': pass
 
     def check_state(self):
         for state in self.states.values():
@@ -136,8 +114,7 @@ class Game:
 
     def pause(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_ESCAPE]:
-            self.states['menu'].active = not self.states['menu'].active
+        if keys[pygame.K_ESCAPE]: self.states['menu'].active = not self.states['menu'].active
 
     def run(self):
         while self.running:
@@ -151,11 +128,10 @@ class Game:
                     self.display_surface.fill('#87ceeb')
                 self.states[self.state].update()
                 self.states[self.state].draw(self.display_surface)
-                self.check_menu()
             else:
                 self.groups['game'].update(delta, self.level_height)
                 self.groups['enemy'].update(delta, self.level_height)
-                self.groups['locations'].update(self.player, self.states['tips'], self.states['questions'])
+                self.groups['locations'].update(self.player, self.states['tips'], self.states['questions'], self.questions)
                 self.pause()
 
                 self.internal_surf.fill('#87ceeb')
@@ -166,6 +142,7 @@ class Game:
                 scaled_rect = scaled_surf.get_frect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
                 self.display_surface.blit(scaled_surf, scaled_rect)
 
+            self.check_menu()
             self.check_state()
             pygame.display.update()
 
