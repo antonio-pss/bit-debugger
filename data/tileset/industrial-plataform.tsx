@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.10.2" name="level_tileset" tilewidth="32" tileheight="32" tilecount="81" columns="9">
- <image source="../tileset/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Tileset/level_tileset.png" width="300" height="300"/>
+ <image source="../tileset/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Tileset/industrial-plataform.png" width="300" height="300"/>
  <tile id="0"/>
  <tile id="1"/>
  <tile id="2"/>

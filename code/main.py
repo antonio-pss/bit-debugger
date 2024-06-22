@@ -49,7 +49,7 @@ class Game:
         #self.states['main_menu'].active = True
         self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
 
-        tmx_map = load_pygame(join('..', 'data', 'maps', 'level.tmx'))
+        tmx_map = load_pygame(join('..', 'data', 'maps', 'map-bitdebugger-oficial.tmx'))
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
 

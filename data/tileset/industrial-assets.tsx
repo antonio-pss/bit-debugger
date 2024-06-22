@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="250" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="1">
  <tileset firstgid="1" name="TileSet v1.0" tilewidth="32" tileheight="32" tilecount="100" columns="10">
-  <image source="../tileset/TileSet v1.0.png" width="320" height="320"/>
+  <image source="../tileset/industrial-assets.png" width="320" height="320"/>
  </tileset>
  <tileset firstgid="101" source="industrial-plataform.tsx"/>
  <layer id="1" name="Camada de Blocos 1" width="250" height="20" locked="1">
