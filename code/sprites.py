@@ -185,56 +185,65 @@ class Dialog(pygame.sprite.Sprite):
         # Text
         self.all_text = text
         self.text_index = 0
+        self.text = self.all_text[self.text_index]
         self.color = color
         self.size = size
         self.pos = pos
         self.groups = groups
-        self.text = self.all_text[self.text_index]
-
-        # Help
-        self.line = 0
-        self.column = self.size
+        self.stop = False
 
         # Sprite
         self.image = surf
         self.rect = self.image.get_frect(center=pos)
-        self.text_sprite = DialogText(self.text, self.size, self.color, self.rect.topleft + vector(50, 50), groups)
 
-    def check_borders(self):
-        self.line += self.size/2
+        # Text Sprite
+        self.texts_sprites = list()
+        self.texts_sprites_index = 0
+        self.vector = vector(25, 25)
+        self.texts_sprites.append(DialogText(self.text, self.size, self.color, self.rect.topleft + self.vector, self.groups))
 
-        if self.column > self.image.get_height() - self.size and self.line > self.image.get_width() - 100 and self.all_text[self.text_index+1] == ' ':
-            self.text += '...'
-
-        if self.line > self.image.get_width() - 50 and self.all_text[self.text_index+1] == ' ':
-            self.all_text = self.all_text[:self.text_index+1] + self.all_text[self.text_index+2:]
-            self.column += self.size
-            self.all_text = self.all_text[:self.text_index+1] + '\n' + self.all_text[self.text_index+2:]
-            self.line = 0
-
-    def run(self, state):
-        mouse_pressed = pygame.mouse.get_pressed()[0]
-
-        if mouse_pressed and self.text[-4:-1] == '...' and self.text_index < len(self.all_text)-1:
-            if self.all_text[self.text_index] == ' ':
-                self.all_text = self.all_text[:self.text_index] + self.all_text[self.text_index+1:]
-            self.text_sprite.kill()
-            self.text = self.all_text[self.text_index]
-            self.text_sprite = DialogText(self.text, self.size, self.color, self.rect.topleft + vector(50, 50), self.groups)
-            self.column = self.size
-            self.line = 0
-        elif mouse_pressed and self.text_index == len(self.all_text)-1:
-            state.active = False
-
-    def update(self, state):
-        if self.text_index < len(self.all_text)-1 and self.text[-4:-1] != '...':
-            self.check_borders()
+    def put_letter(self):
+        if self.text_index < len(self.all_text)-1 and not self.stop:
             self.text_index += 1
             self.text += self.all_text[self.text_index]
-            self.text_sprite.kill()
-            self.text_sprite = DialogText(self.text, self.size, self.color, self.rect.topleft + vector(50, 50), self.groups)
-        else:
-            self.run(state)
+            self.texts_sprites[self.texts_sprites_index].kill()
+            self.texts_sprites[self.texts_sprites_index] = DialogText(self.text, self.size, self.color, self.rect.topleft + self.vector, self.groups)
+            print(self.texts_sprites[self.texts_sprites_index].image.get_size())
+            self.check_border()
+
+    def check_border(self):
+        if self.texts_sprites[self.texts_sprites_index].rect.right >= self.rect.right - 100 and self.texts_sprites[self.texts_sprites_index].rect.bottom >= self.rect.bottom - 50:
+            self.stop = True
+            self.text += '...'
+            self.texts_sprites[self.texts_sprites_index].kill()
+            self.texts_sprites[self.texts_sprites_index] = DialogText(self.text, self.size, self.color, self.rect.topleft + self.vector, self.groups)
+        elif self.texts_sprites[self.texts_sprites_index].rect.right >= self.rect.right - 50:
+            if self.all_text[self.text_index+1] == ' ':
+                self.text_index += 1
+            self.texts_sprites_index += 1
+            self.vector.y += self.size
+            self.text = ''
+            self.texts_sprites.append(DialogText(self.text, self.size, self.color, self.rect.topleft + self.vector, self.groups))
+
+    def run(self, state):
+        mouse = pygame.mouse.get_pressed()[0]
+        if '...' in self.text:
+            if mouse:
+                self.texts_sprites_index = 0
+                for sprite in self.texts_sprites:
+                    sprite.kill()
+                self.texts_sprites.clear()
+                self.vector = vector(25, 25)
+                self.text = ''
+                self.texts_sprites.append(DialogText(self.text, self.size, self.color, self.rect.topleft + self.vector, self.groups))
+                self.stop = False
+        if self.text_index == len(self.all_text)-1 and mouse:
+            state.active = False
+            self.kill()
+
+    def update(self, state):
+        self.put_letter()
+        self.run(state)
 
 
 class DialogText(pygame.sprite.Sprite):
