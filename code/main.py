@@ -126,7 +126,7 @@ class Game:
             if self.states[self.state].active:
                 if self.state == 'main_menu':
                     self.display_surface.fill('#87ceeb')
-                self.states[self.state].update()
+                self.states[self.state].update(self.states[self.state])
                 self.states[self.state].draw(self.display_surface)
             else:
                 self.groups['game'].update(delta, self.level_height)

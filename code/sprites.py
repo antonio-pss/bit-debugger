@@ -133,7 +133,7 @@ class CI(Enemy):
 
         # movement
         self.direction = 1
-        self.speed = 50
+        self.speed = 75
 
     def move(self, delta):
         self.rect.x += self.direction * self.speed * delta
@@ -166,7 +166,7 @@ class Frame(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(center=pos)
 
 
-class Text(pygame.sprite.Sprite):
+class PressText(pygame.sprite.Sprite):
     def __init__(self, text, size, color, pos, groups):
         super().__init__(groups)
         self.font = pygame.font.Font(None, size)
@@ -175,52 +175,72 @@ class Text(pygame.sprite.Sprite):
 
         self.timer = Timer(1000, self.kill, None, True)
 
-    def update(self, _):
+    def update(self):
         self.timer.update()
 
 
 class Dialog(pygame.sprite.Sprite):
     def __init__(self, text, size, surf, color, pos, groups):
         super().__init__(groups)
-        # Settings
-        self.color = color
+        # Text
         self.all_text = text
+        self.text_index = 0
+        self.color = color
         self.size = size
         self.pos = pos
-        self.timer = Timer(10)
-
-        self.line = 0
-        self.column = 0
-
-        # Text
-        self.text_index = 0
-        self.letter_index = 0
+        self.groups = groups
         self.text = self.all_text[self.text_index]
-        self.font = pygame.Font(None, 50)
-        self.text_surf = self.font.render(self.text, False, color)
+
+        # Help
+        self.line = 0
+        self.column = self.size
 
         # Sprite
         self.image = surf
         self.rect = self.image.get_frect(center=pos)
-        self.image.blit(self.text_surf, (50, 50))
+        self.text_sprite = DialogText(self.text, self.size, self.color, self.rect.topleft + vector(50, 50), groups)
 
     def check_borders(self):
-        self.line += self.size/2.75
+        self.line += self.size/2
+
+        if self.column > self.image.get_height() - self.size and self.line > self.image.get_width() - 100 and self.all_text[self.text_index+1] == ' ':
+            self.text += '...'
 
         if self.line > self.image.get_width() - 50 and self.all_text[self.text_index+1] == ' ':
             self.all_text = self.all_text[:self.text_index+1] + self.all_text[self.text_index+2:]
-            self.text += '\n'
+            self.column += self.size
+            self.all_text = self.all_text[:self.text_index+1] + '\n' + self.all_text[self.text_index+2:]
             self.line = 0
 
-    def update(self):
-        if self.text_index < len(self.all_text)-1 and self.text[-3:] != '...' and not self.timer:
-            self.timer.activate()
+    def run(self, state):
+        mouse_pressed = pygame.mouse.get_pressed()[0]
+
+        if mouse_pressed and self.text[-4:-1] == '...' and self.text_index < len(self.all_text)-1:
+            if self.all_text[self.text_index] == ' ':
+                self.all_text = self.all_text[:self.text_index] + self.all_text[self.text_index+1:]
+            self.text_sprite.kill()
+            self.text = self.all_text[self.text_index]
+            self.text_sprite = DialogText(self.text, self.size, self.color, self.rect.topleft + vector(50, 50), self.groups)
+            self.column = self.size
+            self.line = 0
+        elif mouse_pressed and self.text_index == len(self.all_text)-1:
+            state.active = False
+
+    def update(self, state):
+        if self.text_index < len(self.all_text)-1 and self.text[-4:-1] != '...':
             self.check_borders()
             self.text_index += 1
-
             self.text += self.all_text[self.text_index]
-
-            self.text_surf = self.font.render(self.text, False, self.color)
-            self.image.blit(self.text_surf, (50, 50))
+            self.text_sprite.kill()
+            self.text_sprite = DialogText(self.text, self.size, self.color, self.rect.topleft + vector(50, 50), self.groups)
         else:
-            self.timer.update()
+            self.run(state)
+
+
+class DialogText(pygame.sprite.Sprite):
+    def __init__(self, text, size, color, pos, groups):
+        super().__init__(groups)
+        self.font = pygame.font.Font(join('..', 'font.ttf'), size)
+        self.image = self.font.render(text, False, color)
+        self.rect = self.image.get_frect(topleft=pos)
+
