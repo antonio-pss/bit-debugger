@@ -35,7 +35,7 @@ class States(pygame.sprite.Group):
             if self.name == 'tips':
                 Dialog(row['text'], 50, pygame.Surface((WINDOW_WIDTH*0.6, WINDOW_HEIGHT*0.3)), 'White', (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
             elif self.name == 'questions':
-                if row['pos_x'] == 0.1:
+                if row['pos_x'] == 0.5:
                     Dialog(row['text'], 100, pygame.Surface((1000, 250)), 'White', (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
                 else:
                     Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), pygame.Surface((200, 50)), row['text'], self, row['answer'])

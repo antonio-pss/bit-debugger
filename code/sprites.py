@@ -18,6 +18,7 @@ class AnimatedSprite(Sprite):
         self.frames = frames
         self.frame_index = 0
         self.animation_speed = 10
+        self.flip = False
         super().__init__(pos, self.frames[self.frame_index], groups)
 
     def animate(self, delta):
@@ -29,6 +30,7 @@ class Player(AnimatedSprite):
     def __init__(self, pos, frames_walk, frames_jumping, groups, collision_sprites, enemy_sprites):
         super().__init__(pos, frames_walk, groups)
         self.flip = False
+        self.hearts = 5
 
         # frames
         self.frames_jumping = frames_jumping
@@ -79,6 +81,7 @@ class Player(AnimatedSprite):
     def check_border(self, level_height):
         if self.rect.y > level_height + 1000:
             self.rect.center = self.start_pos
+            self.hearts -= 1
 
     def animate(self, delta):
         # personagem virar quando andar
@@ -102,6 +105,7 @@ class Player(AnimatedSprite):
                     self.direction.y = -10
                 else:
                     self.rect.center = self.start_pos
+                    self.hearts -= 1
 
     def update(self, delta, level_height):
         self.check_floor()
@@ -123,12 +127,15 @@ class Enemy(AnimatedSprite):
     def destroy(self):
         self.death_timer.activate()
         self.frames = self.frames_dead
+        if self.flip:
+            self.frames = [pygame.transform.flip(surf, True, False) for surf in self.frames]
+        self.rect.y -= 10
 
 
 class CI(Enemy):
     def __init__(self, rect, frames_walk, frames_dead, groups):
         super().__init__(rect.topleft, frames_walk, frames_dead, groups)
-        self.rect.bottomleft = rect.bottomleft
+        self.rect.bottom = rect.bottom
         self.main_rect = rect
 
         # movement
@@ -141,6 +148,7 @@ class CI(Enemy):
     def constraint(self):
         if not self.main_rect.contains(self.rect):
             self.direction *= -1
+            self.flip = not self.flip
             self.frames = [pygame.transform.flip(surf, True, False) for surf in self.frames]
 
     def update(self, delta, _):
@@ -156,6 +164,7 @@ class Frame(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = surf
         self.answer = answer
+        self.name = 'Frame'
 
         font = pygame.Font(None, 20)
         text_surf = font.render(text, True, 'White')
@@ -183,6 +192,7 @@ class Dialog(pygame.sprite.Sprite):
     def __init__(self, text, size, surf, color, pos, groups):
         super().__init__(groups)
         # Text
+        self.name = 'Dialog'
         self.all_text = text
         self.text_index = 0
         self.text = self.all_text[self.text_index]
@@ -237,7 +247,7 @@ class Dialog(pygame.sprite.Sprite):
                 self.text = ''
                 self.texts_sprites.append(DialogText(self.text, self.size, self.color, self.rect.topleft + self.vector, self.groups))
                 self.stop = False
-        if self.text_index == len(self.all_text)-1 and mouse:
+        if self.text_index == len(self.all_text)-1 and mouse and state.name == 'tips':
             state.active = False
             self.kill()
 

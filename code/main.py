@@ -1,3 +1,5 @@
+import pygame.surface
+
 from groups import *
 from sprites import *
 from support import *
@@ -19,8 +21,12 @@ class Game:
         self.states = {
             'main_menu': States('main_menu'),
             'menu': States('menu'),
+            'choose': States('choose'),
+            'victory': States('victory'),
+            'game_over': States('game_over'),
+            'tips': States('tips'),
             'questions': States('questions'),
-            'tips': States('tips')}
+        }
 
         self.groups = {
             'game': GameSprites(),
@@ -46,8 +52,10 @@ class Game:
 
     def setup(self):
         self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
-        #self.states['main_menu'].active = True
+        self.states['main_menu'].active = True
         self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
+        self.states['choose'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Choose'")
+        self.states['game_over'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Game Over'")
 
         tmx_map = load_pygame(join('..', 'data', 'maps', 'level.tmx'))
         self.level_width = tmx_map.width * TILE_SIZE
@@ -85,6 +93,8 @@ class Game:
 
         for state in self.states.values():
             if state.active:
+                if state.name == 'game_over' and mouse_button:
+                    self.running = False
                 for sprite in state:
                     if sprite.rect.collidepoint(mouse_pos) and mouse_button:
                         if state.name == 'main_menu':
@@ -100,17 +110,31 @@ class Game:
                                 state.active = False
                             if sprite.text == 'Quit':
                                 state.active = False
+                                self.display_surface.fill('#87ceeb')
+                                self.states['choose'].active = True
+                        elif state.name == 'choose':
+                            if sprite.text == 'Sim':
+                                state.active = False
                                 self.states['main_menu'].active = True
+                            if sprite.text == 'Não':
+                                state.active = False
+                                self.states['menu'].active = True
                         elif state.name == 'questions':
-                            if not sprite.answer:
-                                self.player.rect.center = self.player.start_pos
-                            else:
-                                self.questions += 1
-                        elif state.name == 'tips': pass
+                            if sprite.name == 'Frame':
+                                if not sprite.answer:
+                                    self.player.rect.center = self.player.start_pos
+                                    state.active = False
+                                    self.player.hearts -= 1
+                                else:
+                                    state.active = False
+                                    self.questions += 1
 
     def check_state(self):
         for state in self.states.values():
             if state.active: self.state = state.name
+
+        if self.player.hearts == 0:
+            self.states['game_over'].active = True
 
     def pause(self):
         keys = pygame.key.get_pressed()
@@ -124,8 +148,7 @@ class Game:
                     self.running = False
 
             if self.states[self.state].active:
-                if self.state == 'main_menu':
-                    self.display_surface.fill('#87ceeb')
+                self.display_surface.fill('#87ceeb')
                 self.states[self.state].update(self.states[self.state])
                 self.states[self.state].draw(self.display_surface)
             else:
@@ -141,6 +164,7 @@ class Game:
                 scaled_surf = pygame.transform.scale(self.internal_surf, vector((WINDOW_WIDTH, WINDOW_HEIGHT)) * self.zoom_scale)
                 scaled_rect = scaled_surf.get_frect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
                 self.display_surface.blit(scaled_surf, scaled_rect)
+                #self.display_surface.blit(pygame.surface.Surface((200, 50)), (50, 50))
 
             self.check_menu()
             self.check_state()
