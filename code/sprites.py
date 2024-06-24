@@ -40,6 +40,7 @@ class Player(AnimatedSprite):
         # movement & collision
         self.start_pos = pos
         self.collision_sprites = collision_sprites
+        self.damage_sprites = damage_sprites
         self.enemy_sprites = enemy_sprites
         self.direction = vector()
         self.speed = 250
@@ -111,6 +112,7 @@ class Player(AnimatedSprite):
                     self.hearts -= 1
 
     def check_damage_collision(self):
+        for sprite in self.
 
     def update(self, delta, level_height):
         self.check_floor()
