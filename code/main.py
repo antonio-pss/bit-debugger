@@ -32,7 +32,8 @@ class Game:
             'game': GameSprites(),
             'collision': pygame.sprite.Group(),
             'enemy': pygame.sprite.Group(),
-            'locations': Locations()}
+            'locations': Locations(),
+            'damage': pygame.sprite.Group()}
 
         # Zoom
         self.zoom_scale = 2
@@ -57,15 +58,24 @@ class Game:
         self.states['choose'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Choose'")
         self.states['game_over'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Game Over'")
 
-        tmx_map = load_pygame('..\data//maps//map-bitdebugger_2.tmx')
+        tmx_map = load_pygame(join('..', 'data', 'maps', 'map-bitdebugger_2.tmx'))
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
+
+        for x, y, image in tmx_map.get_layer_by_name('background2').tiles():
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
+
+        for x, y, image in tmx_map.get_layer_by_name('background').tiles():
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
+
+        for x, y, image in tmx_map.get_layer_by_name('ambiente').tiles():
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
 
         for x, y, image in tmx_map.get_layer_by_name('blocos').tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.groups['game'], self.groups['collision']))
 
-        for x, y, image in tmx_map.get_layer_by_name('ambiente').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
+        for x, y, image in tmx_map.get_layer_by_name('damage').tiles():
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['damage'])
 
         for obj in tmx_map.get_layer_by_name('entities'):
             if obj.name == 'Player':

@@ -27,7 +27,7 @@ class AnimatedSprite(Sprite):
 
 
 class Player(AnimatedSprite):
-    def __init__(self, pos, frames_walk, frames_jumping, groups, collision_sprites, enemy_sprites):
+    def __init__(self, pos, frames_walk, frames_jumping, groups, collision_sprites, enemy_sprites, damage_sprites):
         super().__init__(pos, frames_walk, groups)
         self.flip = False
         self.hearts = 5
@@ -42,15 +42,18 @@ class Player(AnimatedSprite):
         self.collision_sprites = collision_sprites
         self.enemy_sprites = enemy_sprites
         self.direction = vector()
-        self.speed = 300
+        self.speed = 250
         self.gravity = 50
         self.on_floor = False
 
-    def input(self):
+    def input(self, delta):
         keys = pygame.key.get_pressed()
-        self.direction.x = keys[pygame.K_d] - keys[pygame.K_a]
-        if keys[pygame.K_SPACE] and self.on_floor:
-            self.direction.y = -15
+        if keys[pygame.K_d] or keys[pygame.K_a]:
+            self.direction.x = keys[pygame.K_d] - keys[pygame.K_a]
+        else:
+            self.direction.x = keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]
+        if (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.on_floor:
+            self.direction.y -= 13.5
 
     def move(self, delta):
         # horizontal
@@ -64,7 +67,7 @@ class Player(AnimatedSprite):
 
     def collision(self, direction):
         for sprite in self.collision_sprites:
-            if sprite.rect.colliderect(self.rect):
+            if self.rect.colliderect(sprite.rect):
                 if direction == 'horizontal':
                     if self.direction.x > 0: self.rect.right = sprite.rect.left
                     if self.direction.x < 0: self.rect.left = sprite.rect.right
@@ -107,10 +110,12 @@ class Player(AnimatedSprite):
                     self.rect.center = self.start_pos
                     self.hearts -= 1
 
+    def check_damage_collision(self):
+
     def update(self, delta, level_height):
         self.check_floor()
         self.check_border(level_height)
-        self.input()
+        self.input(delta)
         self.move(delta)
         self.check_enemy_collision()
         self.animate(delta)
