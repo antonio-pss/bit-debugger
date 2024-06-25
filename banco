@@ -30,25 +30,25 @@ values (1, 'Main Menu', 0, 0),
 
 -- Main Menu
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values (' ', 0.5, 0.3, '..|images|logo_ex1', false, 1),
-       ('Start', 0.5, 0.6, '..|images|btn', false, 1),
-       ('About', 0.5, 0.7, '..|images|btn', false, 1),
-       ('Quit', 0.5, 0.8, '..|images|btn', false, 1);
+values (' ', 0.5, 0.3, '..|images|displays|logos', false, 1),
+       ('Start', 0.5, 0.6, '..|images|displays|btn_small', false, 1),
+       ('About', 0.5, 0.7, '..|images|displays|btn_small', false, 1),
+       ('Quit', 0.5, 0.8, '..|images|displays|btn_small', false, 1);
 
 -- Menu
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values (' ', 0.5, 0.3, '..|images|logo_ex1', false, 2),
-       ('Resume', 0.5, 0.6, '..|images|btn', false, 2),
-       ('Restart', 0.5, 0.7, '..|images|btn', false, 2),
-       ('Quit', 0.5, 0.8, '..|images|btn', false, 2);
+values (' ', 0.5, 0.3, '..|images|displays|logos', false, 2),
+       ('Resume', 0.5, 0.6, '..|images|displays|btn_small', false, 2),
+       ('Restart', 0.5, 0.7, '..|images|displays|btn_small', false, 2),
+       ('Quit', 0.5, 0.8, '..|images|displays|btn_small', false, 2);
 
 -- Game Over
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Paia', 0.5, 0.5, '', false, 3);
+values ('Paia', 0.5, 0.5, '..|images|displays|btn_large', false, 3);
 
 -- Victory
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Garapa', 0.5, 0.5, '', false, 4);
+values ('Garapa', 0.5, 0.5, '..|images|displays|btn_large', false, 4);
 
 -- Tip 1
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
@@ -57,8 +57,8 @@ values ('Essa é a dica 1, agora vou enrolar o texto até quebre a linha. Agora 
 -- Question 1
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
 values ('Essa é a questão 1.', 0.5, 0.25, '', false, 7),
-       ('Resposta 1', 0.25, 0.6, '..|images|btn', false, 7),
-       ('Resposta 2', 0.75, 0.6, '..|images|btn', false, 7),
-       ('Resposta 3', 0.25, 0.8, '..|images|btn', false, 7),
-       ('Resposta 4', 0.75, 0.8, '..|images|btn', true, 7);
+       ('Resposta 1', 0.25, 0.6, '..|images|displays|btn_large', false, 7),
+       ('Resposta 2', 0.75, 0.6, '..|images|displays|btn_large', false, 7),
+       ('Resposta 3', 0.25, 0.8, '..|images|displays|btn_large', false, 7),
+       ('Resposta 4', 0.75, 0.8, '..|images|displays|btn_large', true, 7);
 

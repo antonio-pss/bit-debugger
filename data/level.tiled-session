@@ -1,8 +1,8 @@
 {
     "activeFile": "maps/map-bitdebugger_2.tmx",
     "expandedProjectPaths": [
-        "maps",
-        "tileset"
+        "tileset",
+        "maps"
     ],
     "file.lastUsedOpenFilter": "Todos os Ficheiros (*)",
     "fileStates": {
@@ -15,11 +15,11 @@
             }
         },
         "maps/map-bitdebugger_2.tmx": {
-            "scale": 0.5,
+            "scale": 1,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 4048,
-                "y": 678
+                "x": 2160,
+                "y": 1083
             }
         },
         "maps/map-bitdebugger_2.tmx#TileSet v1.0": {

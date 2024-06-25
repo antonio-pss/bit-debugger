@@ -55,7 +55,6 @@ class Game:
         self.spike = import_image('..', 'images', 'spike')
         self.coins = import_folder('..', 'images', 'coins')
 
-
     def setup(self):
         self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
         self.states['main_menu'].active = True
