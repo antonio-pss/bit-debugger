@@ -32,17 +32,13 @@ class States(pygame.sprite.Group):
             Sprite((0, 0), pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA), self)
 
         for row in rows:
-            if self.name == 'tips':
-                Dialog(row['text'], 50, pygame.Surface((WINDOW_WIDTH*0.6, WINDOW_HEIGHT*0.3)), 'White', (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
-            elif self.name == 'questions':
+            if self.name == 'tips' or self.name == 'questions':
                 if row['pos_x'] == 0.5:
                     Dialog(row['text'], 100, pygame.Surface((1000, 250)), 'White', (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
                 else:
-                    Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), pygame.Surface((200, 50)), row['text'], self, row['answer'])
-            elif row['surf_path'] != '':
-                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_image(*row['surf_path'].split('|')), row['text'], self)
+                    Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_folder(*row['surf_path'].split('|')), row['text'], self, row['answer'])
             else:
-                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), pygame.Surface((200, 50)), row['text'], self)
+                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_folder(*row['surf_path'].split('|')), row['text'], self)
 
 
 class Locations(pygame.sprite.Group):

@@ -113,7 +113,7 @@ class Player(AnimatedSprite):
 
     def check_damage_collision(self):
         for sprite in self.damage_sprites:
-            if pygame.sprite.collide_mask(sprite, self):
+            if self.rect.colliderect(sprite.rect):
                 self.hearts -= 1
                 self.rect.center = self.start_pos
 
@@ -180,19 +180,28 @@ class CI(Enemy):
 
 
 class Frame(pygame.sprite.Sprite):
-    def __init__(self, pos, surf, text, groups, answer=False):
+    def __init__(self, pos, frames, text, groups, answer=False):
         super().__init__(groups)
-        self.image = surf
+        self.frames = frames
+        self.image = self.frames[0]
         self.answer = answer
         self.name = 'Frame'
 
-        font = pygame.Font(None, 20)
-        text_surf = font.render(text, True, 'White')
-        text_rect = text_surf.get_frect(center=self.image.get_frect().center)
+        self.font = pygame.Font(join('..', 'font.ttf'), 20)
+        self.text_surf = self.font.render(text, True, 'White')
+        self.text_rect = self.text_surf.get_frect(center=self.image.get_frect().center)
 
         self.text = text
-        self.image.blit(text_surf, text_rect)
+        self.image.blit(self.text_surf, self.text_rect)
         self.rect = self.image.get_frect(center=pos)
+
+    def update(self, _):
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            self.image = self.frames[1]
+            self.image.blit(self.text_surf, self.text_rect)
+        else:
+            self.image = self.frames[0]
 
 
 class PressText(pygame.sprite.Sprite):

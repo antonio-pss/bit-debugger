@@ -1,5 +1,5 @@
 {
-    "activeFile": "maps/level.tmx",
+    "activeFile": "maps/map-bitdebugger_2.tmx",
     "expandedProjectPaths": [
         "maps",
         "tileset"
@@ -14,6 +14,17 @@
                 "y": 490.5
             }
         },
+        "maps/map-bitdebugger_2.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 4048,
+                "y": 678
+            }
+        },
+        "maps/map-bitdebugger_2.tmx#TileSet v1.0": {
+            "scaleInDock": 1
+        },
         "tileset/Ground.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
@@ -25,16 +36,18 @@
         "tileset/Objets.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "tileset/industrial-plataform.tsx": {
+            "scaleInDock": 1
         }
     },
     "last.imagePath": "D:/Estudos/bit-debugger/data/graphics",
     "openFiles": [
-        "maps/level.tmx",
-        "tileset/Ground.tsx",
-        "tileset/Objects.tsx"
+        "maps/map-bitdebugger_2.tmx"
     ],
     "project": "level.tiled-project",
     "recentFiles": [
+        "maps/map-bitdebugger_2.tmx",
         "tileset/Objects.tsx",
         "tileset/Ground.tsx",
         "maps/level.tmx",

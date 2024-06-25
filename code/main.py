@@ -44,12 +44,17 @@ class Game:
 
     def load_assets(self):
         # graphics
-        self.logo = import_image('..', 'images', 'logo_ex1')
+        self.logo = import_image('..', 'images', 'displays', 'logos', '0')
         self.bit_frames_walk = import_folder('..', 'images', 'bit', 'bit-walk')
         self.bit_frames_jump = import_folder('..', 'images', 'bit', 'bit-jump')
         self.ci_frames_walk = import_folder('..', 'images', 'enemy', 'ci', 'ci-walk')
         self.ci_frames_dead = import_folder('..', 'images', 'enemy', 'ci', 'ci-dead')
         self.background = import_image('..', 'data', 'maps', 'background')
+        self.btn_small = import_folder('..', 'images', 'displays', 'btn_small')
+        self.btn_large = import_folder('..', 'images', 'displays', 'btn_large')
+        self.spike = import_image('..', 'images', 'spike')
+        self.coins = import_folder('..', 'images', 'coins')
+
 
     def setup(self):
         self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
@@ -57,18 +62,21 @@ class Game:
         self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
         self.states['game_over'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Game Over'")
 
+        self.grayback = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        self.grayback.fill((0, 0, 0, 128))
+
         tmx_map = load_pygame(join('..', 'data', 'maps', 'map-bitdebugger_2.tmx'))
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
 
-        Sprite((0, 0), self.background, self.groups['game'])
 
         for x, y, image in tmx_map.get_layer_by_name('blocos').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.groups['game'], self.groups['collision']))
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((32, 32), pygame.SRCALPHA), (self.groups['game'], self.groups['collision']))
 
         for x, y, image in tmx_map.get_layer_by_name('damage').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image,(self.groups['game'], self.groups['damage']))
+            Sprite((x * TILE_SIZE + 3, y * TILE_SIZE + 17), self.spike,(self.groups['game'], self.groups['damage']))
 
+        Sprite((0, 0), self.background, self.groups['game'])
         for obj in tmx_map.get_layer_by_name('entities'):
             if obj.name == 'Player':
                 self.player = Player(pos=(obj.x, obj.y),
@@ -90,7 +98,7 @@ class Game:
                        number=obj.number,
                        name='question' if obj.name == 'Question' else 'tip')
             if obj.name == 'Coin':
-                Coin(pos=(obj.x, obj.y), frames=import_folder('..', 'images', 'coins'), groups=self.groups['game'])
+                Coin(pos=(obj.x, obj.y), frames=self.coins, groups=self.groups['game'])
 
     def check_menu(self):
         mouse_pos = pygame.mouse.get_pos()
@@ -148,16 +156,21 @@ class Game:
                     self.running = False
 
             if self.states[self.state].active:
-                self.display_surface.fill('#87ceeb')
+                if self.state == 'main_menu':
+                    self.display_surface.blit(self.background, (0, 0))
+                elif not self.gray:
+                    self.display_surface.blit(self.grayback, (0, 0))
+                    self.gray = True
                 self.states[self.state].update(self.states[self.state])
                 self.states[self.state].draw(self.display_surface)
             else:
+                self.gray = False
                 self.groups['game'].update(delta, self.level_height)
                 self.groups['enemy'].update(delta, self.level_height)
                 self.groups['locations'].update(self.player, self.states['tips'], self.states['questions'], self.questions)
                 self.pause()
 
-                self.internal_surf.fill('#87ceeb')
+                self.internal_surf.fill('black')
                 self.groups['game'].draw(self.player.rect.center, self.internal_surf)
 
                 # Zoom
