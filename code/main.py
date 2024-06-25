@@ -21,7 +21,6 @@ class Game:
         self.states = {
             'main_menu': States('main_menu'),
             'menu': States('menu'),
-            'choose': States('choose'),
             'victory': States('victory'),
             'game_over': States('game_over'),
             'tips': States('tips'),
@@ -55,15 +54,11 @@ class Game:
         self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
         self.states['main_menu'].active = True
         self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
-        self.states['choose'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Choose'")
         self.states['game_over'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Game Over'")
 
         tmx_map = load_pygame(join('..', 'data', 'maps', 'map-bitdebugger_2.tmx'))
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
-
-        for x, y, image in tmx_map.get_layer_by_name('background2').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
 
         for x, y, image in tmx_map.get_layer_by_name('background').tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
@@ -123,12 +118,7 @@ class Game:
                                 self.player.rect.center = self.player.start_pos
                                 state.active = False
                             if sprite.text == 'Quit':
-                                state.active = False
-                                self.display_surface.fill('#87ceeb')
-                                self.states['choose'].active = True
-                        elif state.name == 'choose':
-                            if sprite.text == 'Sim':
-                                state.active = False
+                                self.running = False
                                 self.states['main_menu'].active = True
                             if sprite.text == 'Não':
                                 state.active = False

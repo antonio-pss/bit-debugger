@@ -54,7 +54,7 @@ class Player(AnimatedSprite):
         else:
             self.direction.x = keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]
         if (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.on_floor:
-            self.direction.y -= 13.5
+            self.direction.y -= 14
 
     def move(self, delta):
         # horizontal
