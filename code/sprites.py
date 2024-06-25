@@ -238,7 +238,6 @@ class Dialog(pygame.sprite.Sprite):
             self.text += self.all_text[self.text_index]
             self.texts_sprites[self.texts_sprites_index].kill()
             self.texts_sprites[self.texts_sprites_index] = DialogText(self.text, self.size, self.color, self.rect.topleft + self.vector, self.groups)
-            print(self.texts_sprites[self.texts_sprites_index].image.get_size())
             self.check_border()
 
     def check_border(self):

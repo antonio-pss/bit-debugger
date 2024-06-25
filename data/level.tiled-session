@@ -4,13 +4,14 @@
         "maps",
         "tileset"
     ],
+    "file.lastUsedOpenFilter": "Todos os Ficheiros (*)",
     "fileStates": {
         "maps/level.tmx": {
             "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1633,
-                "y": 491
+                "x": 1632.5,
+                "y": 490.5
             }
         },
         "tileset/Ground.tsx": {

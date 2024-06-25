@@ -49,6 +49,7 @@ class Game:
         self.bit_frames_jump = import_folder('..', 'images', 'bit', 'bit-jump')
         self.ci_frames_walk = import_folder('..', 'images', 'enemy', 'ci', 'ci-walk')
         self.ci_frames_dead = import_folder('..', 'images', 'enemy', 'ci', 'ci-dead')
+        self.background = import_image('..', 'data', 'maps', 'background')
 
     def setup(self):
         self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
@@ -60,11 +61,7 @@ class Game:
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
 
-        for x, y, image in tmx_map.get_layer_by_name('background').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
-
-        for x, y, image in tmx_map.get_layer_by_name('ambiente').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['game'])
+        Sprite((0, 0), self.background, self.groups['game'])
 
         for x, y, image in tmx_map.get_layer_by_name('blocos').tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.groups['game'], self.groups['collision']))
@@ -94,7 +91,6 @@ class Game:
                        name='question' if obj.name == 'Question' else 'tip')
             if obj.name == 'Coin':
                 Coin(pos=(obj.x, obj.y), frames=import_folder('..', 'images', 'coins'), groups=self.groups['game'])
-
 
     def check_menu(self):
         mouse_pos = pygame.mouse.get_pos()
