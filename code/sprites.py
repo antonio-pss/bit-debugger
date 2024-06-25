@@ -112,7 +112,10 @@ class Player(AnimatedSprite):
                     self.hearts -= 1
 
     def check_damage_collision(self):
-        for sprite in self.
+        for sprite in self.damage_sprites:
+            if pygame.sprite.collide_mask(sprite, self):
+                self.hearts -= 1
+                self.rect.center = self.start_pos
 
     def update(self, delta, level_height):
         self.check_floor()
@@ -120,6 +123,16 @@ class Player(AnimatedSprite):
         self.input(delta)
         self.move(delta)
         self.check_enemy_collision()
+        self.check_damage_collision()
+        self.animate(delta)
+
+
+class Coin(AnimatedSprite):
+    def __init__(self, pos, frames, groups):
+        super().__init__(pos, frames, groups)
+        self.rect.center = pos
+
+    def update(self, delta, _):
         self.animate(delta)
 
 

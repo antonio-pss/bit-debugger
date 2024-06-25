@@ -75,7 +75,7 @@ class Game:
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.groups['game'], self.groups['collision']))
 
         for x, y, image in tmx_map.get_layer_by_name('damage').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), image, self.groups['damage'])
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), image,(self.groups['game'], self.groups['damage']))
 
         for obj in tmx_map.get_layer_by_name('entities'):
             if obj.name == 'Player':
@@ -84,7 +84,8 @@ class Game:
                                      frames_jumping=self.bit_frames_jump,
                                      groups=self.groups['game'],
                                      collision_sprites=self.groups['collision'],
-                                     enemy_sprites=self.groups['enemy'])
+                                     enemy_sprites=self.groups['enemy'],
+                                     damage_sprites=self.groups['damage'])
             if obj.name == 'Enemy':
                 self.enemy = CI(rect=pygame.FRect(obj.x, obj.y, obj.width, obj.height),
                                 frames_walk=self.ci_frames_walk,
@@ -96,6 +97,9 @@ class Game:
                        groups=self.groups['locations'],
                        number=obj.number,
                        name='question' if obj.name == 'Question' else 'tip')
+            if obj.name == 'Coin':
+                Coin(pos=(obj.x, obj.y), frames=import_folder('..', 'images', 'coins'), groups=self.groups['game'])
+
 
     def check_menu(self):
         mouse_pos = pygame.mouse.get_pos()
