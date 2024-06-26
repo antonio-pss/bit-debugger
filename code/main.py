@@ -17,12 +17,16 @@ class Game:
         self.state = 'main_menu'
         self.questions = 0
 
+        # PlaceHolder
+        self.enemy = list()
+
         # Groups
         self.states = {
             'main_menu': States('main_menu'),
             'menu': States('menu'),
             'victory': States('victory'),
             'game_over': States('game_over'),
+            'choose': States('choose'),
             'tips': States('tips'),
             'questions': States('questions'),
         }
@@ -32,7 +36,8 @@ class Game:
             'collision': pygame.sprite.Group(),
             'enemy': pygame.sprite.Group(),
             'locations': Locations(),
-            'damage': pygame.sprite.Group()}
+            'damage': pygame.sprite.Group(),
+            'coffee': pygame.sprite.Group()}
 
         # Zoom
         self.zoom_scale = 2
@@ -54,12 +59,14 @@ class Game:
         self.btn_large = import_folder('..', 'images', 'displays', 'btn_large')
         self.spike = import_image('..', 'images', 'spike')
         self.coins = import_folder('..', 'images', 'coins')
+        self.coffee = import_folder('..', 'images', 'coffee')
 
     def setup(self):
         self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
         self.states['main_menu'].active = True
         self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
         self.states['game_over'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Game Over'")
+        self.states['choose'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Choose'")
 
         self.grayback = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
         self.grayback.fill((0, 0, 0, 128))
@@ -74,7 +81,7 @@ class Game:
             Sprite((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((32, 32), pygame.SRCALPHA), (self.groups['game'], self.groups['collision']))
 
         for x, y, image in tmx_map.get_layer_by_name('damage').tiles():
-            Sprite((x * TILE_SIZE + 3, y * TILE_SIZE + 17), self.spike, (self.groups['game'], self.groups['damage']))
+            Sprite((x * TILE_SIZE + 6, y * TILE_SIZE + 17), self.spike, (self.groups['game'], self.groups['damage']))
 
         Sprite((0, 0), self.background, self.groups['game'])
 
@@ -88,10 +95,10 @@ class Game:
                                      enemy_sprites=self.groups['enemy'],
                                      damage_sprites=self.groups['damage'])
             if obj.name == 'Enemy':
-                self.enemy = CI(rect=pygame.FRect(obj.x, obj.y, obj.width, obj.height),
+                self.enemy.append(CI(rect=pygame.FRect(obj.x, obj.y, obj.width, obj.height),
                                 frames_walk=self.ci_frames_walk,
                                 frames_dead=self.ci_frames_dead,
-                                groups=(self.groups['game'], self.groups['enemy']))
+                                groups=(self.groups['game'], self.groups['enemy'])))
             if obj.name == 'Question' or obj.name == 'Tip':
                 Sprite(pos=(obj.x, obj.y),
                        surf=pygame.Surface((obj.width, obj.height)),
@@ -101,6 +108,25 @@ class Game:
             if obj.name == 'Coin':
                 Coin(pos=(obj.x, obj.y), frames=self.coins, groups=self.groups['game'])
 
+        for i in range(self.player.hearts):
+            Coffee((i*TILE_SIZE, 0), self.coffee, self.groups['coffee'], i)
+
+    def restart(self):
+        self.player.rect.center = self.player.start_pos
+        self.player.hearts = 5
+        self.questions = 0
+        for sprite in self.enemy:
+            sprite.kill()
+        self.enemy.clear()
+
+        tmx_map = load_pygame(join('..', 'data', 'maps', 'map-bitdebugger_2.tmx'))
+        for obj in tmx_map.get_layer_by_name('entities'):
+            if obj.name == 'Enemy':
+                self.enemy.append(CI(rect=pygame.FRect(obj.x, obj.y, obj.width, obj.height),
+                                frames_walk=self.ci_frames_walk,
+                                frames_dead=self.ci_frames_dead,
+                                groups=(self.groups['game'], self.groups['enemy'])))
+
     def check_menu(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_button = pygame.mouse.get_pressed()[0]
@@ -108,14 +134,22 @@ class Game:
         for state in self.states.values():
             if state.active:
                 if state.name == 'game_over' and mouse_button:
-                    self.running = False
+                    state.active = False
+                    self.states['main_menu'].active = True
+                    self.player.hearts = 5
                 for sprite in state:
                     if sprite.rect.collidepoint(mouse_pos) and mouse_button:
+
+                        # Main Menu
                         if state.name == 'main_menu':
-                            if sprite.text == 'Start': state.active = False
+                            if sprite.text == 'Start':
+                                state.active = False
+                                self.restart()
                             if sprite.text == 'About':
                                 pass
                             if sprite.text == 'Quit': self.running = False
+
+                        # Menu
                         elif state.name == 'menu':
                             if sprite.text == 'Resume':
                                 state.active = False
@@ -123,18 +157,27 @@ class Game:
                                 self.player.rect.center = self.player.start_pos
                                 state.active = False
                             if sprite.text == 'Quit':
-                                self.running = False
+                                state.active = False
+                                self.states['choose'].active = True
+
+                        # Choose
+                        elif state.name == 'choose':
+                            if sprite.text == 'Sim':
+                                state.active = False
                                 self.states['main_menu'].active = True
                             if sprite.text == 'Não':
                                 state.active = False
                                 self.states['menu'].active = True
+
+                        # Questões
                         elif state.name == 'questions':
                             if sprite.name == 'Frame':
                                 if not sprite.answer:
-                                    self.player.rect.center = self.player.start_pos
+                                    self.player.rect.center = self.player.check_pos
                                     state.active = False
                                     self.player.hearts -= 1
                                 else:
+                                    self.player.check_pos = self.player.rect.center
                                     state.active = False
                                     self.questions += 1
 
@@ -175,15 +218,16 @@ class Game:
                 self.states[self.state].draw(self.display_surface)
                 self.check_menu()
             else:
-                self.groups['game'].update(delta, self.level_height)
-                self.groups['enemy'].update(delta, self.level_height)
-                self.groups['locations'].update(self.player, self.states['tips'], self.states['questions'], self.questions, self.groups['game'])
-                self.pause()
-
                 self.internal_surf.fill('black')
                 self.groups['game'].draw(self.player.rect.center, self.internal_surf)
-
                 self.display_surface.blit(scaled_surf, scaled_rect)
+                self.groups['coffee'].draw(self.display_surface)
+
+                self.groups['game'].update(delta, self.level_height)
+                self.groups['enemy'].update(delta, self.level_height)
+                self.groups['coffee'].update(self.player.hearts)
+                self.groups['locations'].update(self.player, self.states['tips'], self.states['questions'], self.questions, self.groups['game'])
+                self.pause()
 
             self.check_state()
             pygame.display.update()

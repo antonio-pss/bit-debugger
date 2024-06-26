@@ -39,6 +39,7 @@ class Player(AnimatedSprite):
 
         # movement & collision
         self.start_pos = pos
+        self.check_pos = pos
         self.collision_sprites = collision_sprites
         self.damage_sprites = damage_sprites
         self.enemy_sprites = enemy_sprites
@@ -108,14 +109,14 @@ class Player(AnimatedSprite):
                     enemy.destroy()
                     self.direction.y = -10
                 else:
-                    self.rect.center = self.start_pos
+                    self.rect.center = self.check_pos
                     self.hearts -= 1
 
     def check_damage_collision(self):
         for sprite in self.damage_sprites:
             if self.rect.colliderect(sprite.rect):
                 self.hearts -= 1
-                self.rect.center = self.start_pos
+                self.rect.center = self.check_pos
 
     def update(self, delta, level_height):
         self.check_floor()
@@ -291,3 +292,12 @@ class DialogText(pygame.sprite.Sprite):
         self.image = self.font.render(text, False, color)
         self.rect = self.image.get_frect(topleft=pos)
 
+
+class Coffee(AnimatedSprite):
+    def __init__(self, pos, frames, groups, number):
+        super().__init__(pos, frames, groups)
+        self.number = number
+
+    def update(self, hearts):
+        if self.number >= hearts:
+            self.image = self.frames[1]

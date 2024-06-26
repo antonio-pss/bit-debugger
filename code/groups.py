@@ -34,7 +34,7 @@ class States(pygame.sprite.Group):
         for row in rows:
             if self.name == 'tips' or self.name == 'questions':
                 if row['pos_x'] == 0.5:
-                    Dialog(row['text'], 100, pygame.Surface((1000, 250)), 'White', (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
+                    Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
                 else:
                     Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_folder(*row['surf_path'].split('|')), row['text'], self, row['answer'])
             else:
@@ -44,13 +44,16 @@ class States(pygame.sprite.Group):
 class Locations(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
+        self.timer = Timer(1000)
 
     def update(self, player, tip, question, questions, game):
+        self.timer.update()
         key = pygame.key.get_just_pressed()[pygame.K_e]
 
         for sprite in self:
             if player.rect.colliderect(sprite.rect):
-                if sprite.text == 'tip':
+                if sprite.text == 'tip' and not self.timer:
+                    self.timer.activate()
                     PressText('Aperte E para ver a dica.', 16, 'white', sprite.rect.midtop, game)
                 if sprite.text == 'tip' and key:
                     tip.empty()
