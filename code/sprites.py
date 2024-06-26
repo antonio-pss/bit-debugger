@@ -207,13 +207,13 @@ class Frame(pygame.sprite.Sprite):
 class PressText(pygame.sprite.Sprite):
     def __init__(self, text, size, color, pos, groups):
         super().__init__(groups)
-        self.font = pygame.font.Font(None, size)
+        self.font = pygame.font.Font(join('..', 'font.ttf'), size)
         self.image = self.font.render(text, False, color)
         self.rect = self.image.get_frect(center=pos)
 
         self.timer = Timer(1000, self.kill, None, True)
 
-    def update(self):
+    def update(self, delta, _):
         self.timer.update()
 
 

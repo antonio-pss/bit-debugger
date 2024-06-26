@@ -63,19 +63,21 @@ class Game:
 
         self.grayback = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
         self.grayback.fill((0, 0, 0, 128))
+        self.map_movement = 0
+        self.map_vector = -1
 
         tmx_map = load_pygame(join('..', 'data', 'maps', 'map-bitdebugger_2.tmx'))
         self.level_width = tmx_map.width * TILE_SIZE
         self.level_height = tmx_map.height * TILE_SIZE
 
-
         for x, y, image in tmx_map.get_layer_by_name('blocos').tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((32, 32), pygame.SRCALPHA), (self.groups['game'], self.groups['collision']))
 
         for x, y, image in tmx_map.get_layer_by_name('damage').tiles():
-            Sprite((x * TILE_SIZE + 3, y * TILE_SIZE + 17), self.spike,(self.groups['game'], self.groups['damage']))
+            Sprite((x * TILE_SIZE + 3, y * TILE_SIZE + 17), self.spike, (self.groups['game'], self.groups['damage']))
 
         Sprite((0, 0), self.background, self.groups['game'])
+
         for obj in tmx_map.get_layer_by_name('entities'):
             if obj.name == 'Player':
                 self.player = Player(pos=(obj.x, obj.y),
@@ -154,31 +156,35 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
 
+            scaled_surf = pygame.transform.scale(self.internal_surf, vector((WINDOW_WIDTH, WINDOW_HEIGHT)) * self.zoom_scale)
+            scaled_rect = scaled_surf.get_frect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+
             if self.states[self.state].active:
                 if self.state == 'main_menu':
-                    self.display_surface.blit(self.background, (0, 0))
-                elif not self.gray:
+                    self.map_movement += self.map_vector
+                    if self.map_movement < -(self.level_width-WINDOW_WIDTH) or self.map_movement >= 0:
+                        self.map_vector *= -1
+                    self.display_surface.blit(self.background, (self.map_movement, -210))
                     self.display_surface.blit(self.grayback, (0, 0))
-                    self.gray = True
+                else:
+                    self.groups['game'].draw(self.player.rect.center, self.internal_surf)
+                    self.display_surface.blit(scaled_surf, scaled_rect)
+                    self.display_surface.blit(self.grayback, (0, 0))
+
                 self.states[self.state].update(self.states[self.state])
                 self.states[self.state].draw(self.display_surface)
+                self.check_menu()
             else:
-                self.gray = False
                 self.groups['game'].update(delta, self.level_height)
                 self.groups['enemy'].update(delta, self.level_height)
-                self.groups['locations'].update(self.player, self.states['tips'], self.states['questions'], self.questions)
+                self.groups['locations'].update(self.player, self.states['tips'], self.states['questions'], self.questions, self.groups['game'])
                 self.pause()
 
                 self.internal_surf.fill('black')
                 self.groups['game'].draw(self.player.rect.center, self.internal_surf)
 
-                # Zoom
-                scaled_surf = pygame.transform.scale(self.internal_surf, vector((WINDOW_WIDTH, WINDOW_HEIGHT)) * self.zoom_scale)
-                scaled_rect = scaled_surf.get_frect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
                 self.display_surface.blit(scaled_surf, scaled_rect)
-                #self.display_surface.blit(pygame.surface.Surface((200, 50)), (50, 50))
 
-            self.check_menu()
             self.check_state()
             pygame.display.update()
 

@@ -45,11 +45,13 @@ class Locations(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
 
-    def update(self, player, tip, question, questions):
+    def update(self, player, tip, question, questions, game):
         key = pygame.key.get_just_pressed()[pygame.K_e]
 
         for sprite in self:
             if player.rect.colliderect(sprite.rect):
+                if sprite.text == 'tip':
+                    PressText('Aperte E para ver a dica.', 16, 'white', sprite.rect.midtop, game)
                 if sprite.text == 'tip' and key:
                     tip.empty()
                     tip.setup(f"select * from frame f inner join display d on f.id_display = d.id "
