@@ -301,3 +301,5 @@ class Coffee(AnimatedSprite):
     def update(self, hearts):
         if self.number >= hearts:
             self.image = self.frames[1]
+        else:
+            self.image = self.frames[0]
