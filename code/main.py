@@ -114,6 +114,7 @@ class Game:
     def restart(self):
         self.player.rect.center = self.player.start_pos
         self.player.hearts = 5
+        self.player.check_pos = self.player.start_pos
         self.questions = 0
         for sprite in self.enemy:
             sprite.kill()
