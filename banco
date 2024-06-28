@@ -15,6 +15,7 @@ create table frame (
     answer boolean,
     id_display integer not null,
     color varchar(10) default 'white',
+    size numeric default 16,
     constraint pk_frame primary key (id),
     constraint fk_frame_display foreign key (id_display) references display (id)
 );
@@ -26,22 +27,26 @@ values (1, 'Main Menu', 0, 0),
        (3, 'Game Over', 0, 0),
        (4, 'Victory', 0, 0),
        (5, 'Choose', 0, 0),
-       (6, 'Tip', 1, 1),
-       (7, 'Question', 1, 1);
+       (6, 'Tip', 1, 1);
+
+insert into display (id, name, level, number)
+values (7, 'Question', 1, 1),
+       (8, 'Question', 1, 2),
+       (9, 'Question', 1, 3),
+       (10, 'Question', 1, 4);
 
 -- Main Menu
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
 values (' ', 0.5, 0.3, '..|images|displays|logos', false, 1),
-       ('Start', 0.5, 0.6, '..|images|displays|btn_small', false, 1),
-       ('About', 0.5, 0.7, '..|images|displays|btn_small', false, 1),
-       ('Quit', 0.5, 0.8, '..|images|displays|btn_small', false, 1);
+       ('Começar', 0.5, 0.6, '..|images|displays|btn_small', false, 1),
+       ('Sair', 0.5, 0.7, '..|images|displays|btn_small', false, 1);
 
 -- Menu
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
 values (' ', 0.5, 0.3, '..|images|displays|logos', false, 2),
-       ('Resume', 0.5, 0.6, '..|images|displays|btn_small', false, 2),
-       ('Restart', 0.5, 0.7, '..|images|displays|btn_small', false, 2),
-       ('Quit', 0.5, 0.8, '..|images|displays|btn_small', false, 2);
+       ('Voltar', 0.5, 0.6, '..|images|displays|btn_small', false, 2),
+       ('Reiniciar', 0.5, 0.7, '..|images|displays|btn_small', false, 2),
+       ('Sair', 0.5, 0.8, '..|images|displays|btn_small', false, 2);
 
 -- Game Over
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
@@ -53,19 +58,20 @@ values ('Garapa', 0.5, 0.5, '..|images|displays|btn_large', false, 4);
 
 -- Choose
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Você tem certeza?', 0.5, 0.3, '..|images|displays|btn_large', false, 5),
+values ('Você tem certeza?', 0.5, 0.3, '..|images|displays|btn_qlarge', false, 5),
        ('Sim', 0.25, 0.5, '..|images|displays|btn_small', false, 5),
        ('Não', 0.75, 0.5, '..|images|displays|btn_small', false, 5);
 
 -- Tip 1
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Essa é a dica 1, agora vou enrolar o texto até quebre a linha. Agora preciso enrolar mais ainda para via de teste. Lorem ipsum dolor e os caralho a quatro.', 0.5, 0.5, '..|images|tela', false, 6);
+values ('Dica 1', 0.5, 0.5, '..|images|tela', false, 6),
+       ('Dica 2', 0.5, 0.5, '..|images|tela', false, 6);
 
 -- Question 1
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, color)
-values ('Essa é a questão 1.', 0.5, 0.25, '..|images|tela', false, 7, 'red'),
-       ('Resposta 1', 0.25, 0.6, '..|images|displays|btn_qlarge', false, 7, default),
-       ('Resposta 2', 0.75, 0.6, '..|images|displays|btn_qlarge', false, 7, default),
-       ('Resposta 3', 0.25, 0.8, '..|images|displays|btn_qlarge', false, 7, default),
-       ('Resposta 4', 0.75, 0.8, '..|images|displays|btn_qlarge', true, 7, default);
+values ('O que é uma  variável?', 0.5, 0.25, '..|images|tela', false, 7, 'red'),
+       ('Local que armazena um tipo específico de valor', 0.25, 0.6, '..|images|displays|btn_qlarge', true, 7, default),
+       ('Local que armazena só um tipo específico de valor', 0.75, 0.6, '..|images|displays|btn_qlarge', false, 7, default),
+       ('Local que armazena só textos', 0.25, 0.8, '..|images|displays|btn_qlarge', false, 7, default),
+       ('Local que armazena só números inteiros', 0.75, 0.8, '..|images|displays|btn_qlarge', false, 7, default);
 
