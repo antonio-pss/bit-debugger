@@ -36,25 +36,25 @@ values (7, 'Question', 1, 1),
        (10, 'Question', 1, 4);
 
 -- Main Menu
-insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values (' ', 0.5, 0.3, '..|images|displays|logos', false, 1),
-       ('Começar', 0.5, 0.6, '..|images|displays|btn_small', false, 1),
-       ('Sair', 0.5, 0.7, '..|images|displays|btn_small', false, 1);
+insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, size)
+values (' ', 0.5, 0.3, '..|images|displays|logos', false, 1, default),
+       ('Começar', 0.5, 0.6, '..|images|displays|btn_small', false, 1, 16*2),
+       ('Sair', 0.5, 0.7, '..|images|displays|btn_small', false, 1, 16*2);
 
 -- Menu
-insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
+insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, size)
 values (' ', 0.5, 0.3, '..|images|displays|logos', false, 2),
-       ('Voltar', 0.5, 0.6, '..|images|displays|btn_small', false, 2),
-       ('Reiniciar', 0.5, 0.7, '..|images|displays|btn_small', false, 2),
-       ('Sair', 0.5, 0.8, '..|images|displays|btn_small', false, 2);
+       ('Voltar', 0.5, 0.6, '..|images|displays|btn_small', false, 2, 16*2),
+       ('Reiniciar', 0.5, 0.7, '..|images|displays|btn_small', false, 2, 16*2),
+       ('Sair', 0.5, 0.8, '..|images|displays|btn_small', false, 2, 16*2);
 
 -- Game Over
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Paia', 0.5, 0.5, '..|images|displays|btn_large', false, 3);
+values ('Paia', 0.5, 0.5, '..|images|tela', false, 3);
 
 -- Victory
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Garapa', 0.5, 0.5, '..|images|displays|btn_large', false, 4);
+values ('Garapa', 0.5, 0.5, '..|images|tela', false, 4);
 
 -- Choose
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
@@ -68,10 +68,10 @@ values ('Dica 1', 0.5, 0.5, '..|images|tela', false, 6),
        ('Dica 2', 0.5, 0.5, '..|images|tela', false, 6);
 
 -- Question 1
-insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, color)
-values ('O que é uma  variável?', 0.5, 0.25, '..|images|tela', false, 7, 'red'),
-       ('Local que armazena um tipo específico de valor', 0.25, 0.6, '..|images|displays|btn_qlarge', true, 7, default),
-       ('Local que armazena só um tipo específico de valor', 0.75, 0.6, '..|images|displays|btn_qlarge', false, 7, default),
-       ('Local que armazena só textos', 0.25, 0.8, '..|images|displays|btn_qlarge', false, 7, default),
-       ('Local que armazena só números inteiros', 0.75, 0.8, '..|images|displays|btn_qlarge', false, 7, default);
+insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, color, size)
+values ('O que é uma  variável?', 0.5, 0.25, '..|images|tela', false, 7, 'red', default),
+       ('Local que armazena um tipo específico de valor', 0.25, 0.6, '..|images|displays|btn_qlarge', true, 7, default, 20),
+       ('Local que armazena só um tipo específico de valor', 0.75, 0.6, '..|images|displays|btn_qlarge', false, 7, default, 20),
+       ('Local que armazena só textos', 0.25, 0.8, '..|images|displays|btn_qlarge', false, 7, default, 20),
+       ('Local que armazena só números inteiros', 0.75, 0.8, '..|images|displays|btn_qlarge', false, 7, default, 20);
 
