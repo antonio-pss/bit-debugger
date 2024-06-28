@@ -107,7 +107,7 @@ class Game:
                 Coin(pos=(obj.x, obj.y), frames=self.coins, groups=self.groups['game'])
 
         for i in range(self.player.hearts):
-            Coffee((i*TILE_SIZE, 0), self.coffee, self.groups['coffee'], i)
+            Coffee((i*55, 0), self.coffee, self.groups['coffee'], i)
 
     def restart(self):
         self.player.rect.center = self.player.start_pos

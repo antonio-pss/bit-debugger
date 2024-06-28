@@ -180,14 +180,14 @@ class CI(Enemy):
 
 
 class Frame(pygame.sprite.Sprite):
-    def __init__(self, pos, frames, text, groups, answer=False):
+    def __init__(self, pos, frames, text, groups, answer=False, size=16):
         super().__init__(groups)
         self.frames = frames
         self.image = self.frames[0]
         self.answer = answer
         self.name = 'Frame'
 
-        self.font = pygame.Font(join('..', 'font.ttf'), 20)
+        self.font = pygame.Font(join('..', 'font.ttf'), int(size))
         self.text_surf = self.font.render(text, True, 'White')
         self.text_rect = self.text_surf.get_frect(center=self.image.get_frect().center)
 

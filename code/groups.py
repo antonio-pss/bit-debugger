@@ -32,14 +32,17 @@ class States(pygame.sprite.Group):
             Sprite((0, 0), pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA), self)
 
         for row in rows:
-            if self.name == 'tips' or self.name == 'questions':
+            if self.name == 'tips':
+                self.dialog = Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
+                self.dialog.rect.midbottom = (WINDOW_WIDTH*0.4, WINDOW_HEIGHT)
+                Sprite(self.dialog.rect.bottomleft, import_image('..', 'images', 'senior-update', 'senior-dica-update'), self)
+            elif self.name == 'questions':
                 if row['pos_x'] == 0.5:
-                    self.dialog = Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
-                    Sprite(self.dialog.rect.topright, import_image('..', 'images', 'senior-update', 'senior-dica-update'), self)
+                    self.dialog = Dialog(row['text'], 16 * 3, import_image(*row['surf_path'].split('|')), row['color'],(WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
                 else:
-                    Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_folder(*row['surf_path'].split('|')), row['text'], self, row['answer'])
+                    Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_folder(*row['surf_path'].split('|')), row['text'], self, row['answer'], row['size'])
             else:
-                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_folder(*row['surf_path'].split('|')), row['text'], self)
+                Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_folder(*row['surf_path'].split('|')), row['text'], self, None, row['size'])
 
 
 class Locations(pygame.sprite.Group):
