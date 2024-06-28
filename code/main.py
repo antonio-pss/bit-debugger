@@ -141,21 +141,19 @@ class Game:
 
                         # Main Menu
                         if state.name == 'main_menu':
-                            if sprite.text == 'Start':
+                            if sprite.text == 'Começar':
                                 state.active = False
                                 self.restart()
-                            if sprite.text == 'About':
-                                pass
-                            if sprite.text == 'Quit': self.running = False
+                            if sprite.text == 'Sair': self.running = False
 
                         # Menu
                         elif state.name == 'menu':
-                            if sprite.text == 'Resume':
+                            if sprite.text == 'Voltar':
                                 state.active = False
-                            if sprite.text == 'Restart':
+                            if sprite.text == 'Reiniciar':
                                 self.player.rect.center = self.player.start_pos
                                 state.active = False
-                            if sprite.text == 'Quit':
+                            if sprite.text == 'Sair':
                                 state.active = False
                                 self.states['choose'].active = True
 

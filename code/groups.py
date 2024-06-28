@@ -32,10 +32,16 @@ class States(pygame.sprite.Group):
             Sprite((0, 0), pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA), self)
 
         for row in rows:
-            if self.name == 'tips':
-                self.dialog = Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
-                self.dialog.rect.midbottom = (WINDOW_WIDTH*0.4, WINDOW_HEIGHT)
-                Sprite(self.dialog.rect.bottomleft, import_image('..', 'images', 'senior-update', 'senior-dica-update'), self)
+            if self.name == 'tips' or self.name == 'game_over':
+                self.dialog = Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (0, 0), self)
+                self.dialog.rect.midbottom = (WINDOW_WIDTH*0.4, WINDOW_HEIGHT - 100)
+                self.sprite = Sprite((0, 0), import_image('..', 'images', 'senior-update', 'senior-dica-update') if self.name == 'tips' else import_image('..', 'images', 'senior-update', 'senior-fail-update'), self)
+                self.sprite.rect.bottomleft = self.dialog.rect.bottomright
+            elif self.name == 'victory':
+                self.dialog = Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (0, 0), self)
+                self.dialog.rect.midbottom = (WINDOW_WIDTH * 0.4, WINDOW_HEIGHT - 100)
+                self.sprite = Coin((0, 0), import_folder('..', 'images', 'senior-update', 'senior-dica-update'), self)
+                self.sprite.rect.bottomleft = self.dialog.rect.bottomright
             elif self.name == 'questions':
                 if row['pos_x'] == 0.5:
                     self.dialog = Dialog(row['text'], 16 * 3, import_image(*row['surf_path'].split('|')), row['color'],(WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)

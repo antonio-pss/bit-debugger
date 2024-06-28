@@ -225,7 +225,7 @@
 </data>
  </layer>
  <objectgroup id="8" name="entities">
-  <object id="1" name="Player" x="2894.67" y="475">
+  <object id="1" name="Player" x="769.337" y="400.333">
    <point/>
   </object>
   <object id="3" name="Tip" x="736" y="447.667" width="64" height="64">
