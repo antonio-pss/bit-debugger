@@ -1,5 +1,3 @@
-import pygame.surface
-
 from groups import *
 from sprites import *
 from support import *
@@ -52,8 +50,8 @@ class Game:
         self.logo = import_image('..', 'images', 'displays', 'logos', '0')
         self.bit_frames_walk = import_folder('..', 'images', 'bit', 'bit-walk')
         self.bit_frames_jump = import_folder('..', 'images', 'bit', 'bit-jump')
-        self.ci_frames_walk = import_folder('..', 'images', 'enemy', 'ci', 'ci-walk')
-        self.ci_frames_dead = import_folder('..', 'images', 'enemy', 'ci', 'ci-dead')
+        self.ci_frames_walk = import_folder('..', 'images', 'enemy', 'ci-walk')
+        self.ci_frames_dead = import_folder('..', 'images', 'enemy', 'ci-dead')
         self.background = import_image('..', 'data', 'maps', 'background')
         self.btn_small = import_folder('..', 'images', 'displays', 'btn_small')
         self.btn_large = import_folder('..', 'images', 'displays', 'btn_large')

@@ -150,7 +150,6 @@ class Enemy(AnimatedSprite):
         self.frames = self.frames_dead
         if self.flip:
             self.frames = [pygame.transform.flip(surf, True, False) for surf in self.frames]
-        self.rect.y -= 10
 
 
 class CI(Enemy):
@@ -161,7 +160,7 @@ class CI(Enemy):
 
         # movement
         self.direction = 1
-        self.speed = 75
+        self.speed = 60
 
     def move(self, delta):
         self.rect.x += self.direction * self.speed * delta
@@ -266,8 +265,9 @@ class Dialog(pygame.sprite.Sprite):
 
     def run(self, state):
         mouse = pygame.mouse.get_pressed()[0]
+        key = pygame.key.get_just_pressed()[pygame.K_e]
         if '...' in self.text:
-            if mouse:
+            if mouse or key:
                 self.texts_sprites_index = 0
                 for sprite in self.texts_sprites:
                     sprite.kill()
@@ -276,7 +276,7 @@ class Dialog(pygame.sprite.Sprite):
                 self.text = ''
                 self.texts_sprites.append(DialogText(self.text, self.size, self.color, self.rect.topleft + self.vector, self.groups))
                 self.stop = False
-        if self.text_index == len(self.all_text)-1 and mouse and state.name == 'tips':
+        if self.text_index == len(self.all_text)-1 and (mouse or key) and state.name == 'tips':
             state.active = False
             self.kill()
 

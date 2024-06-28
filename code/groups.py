@@ -35,7 +35,7 @@ class States(pygame.sprite.Group):
             if self.name == 'tips' or self.name == 'questions':
                 if row['pos_x'] == 0.5:
                     self.dialog = Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
-                    Sprite(self.dialog.rect.topright, import_image('..', 'images', 'senior', 'senior-dica'), self)
+                    Sprite(self.dialog.rect.topright, import_image('..', 'images', 'senior-update', 'senior-dica-update'), self)
                 else:
                     Frame((WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), import_folder(*row['surf_path'].split('|')), row['text'], self, row['answer'])
             else:
