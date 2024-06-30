@@ -1,8 +1,6 @@
 create table display (
     id SERIAL not null,
     name varchar(25) not null,
-    level integer not null,
-    number integer not null,
     constraint pk_display primary key (id)
 );
 
@@ -16,24 +14,20 @@ create table frame (
     id_display integer not null,
     color varchar(10) default 'white',
     size numeric default 16,
+    number numeric default 0,
     constraint pk_frame primary key (id),
     constraint fk_frame_display foreign key (id_display) references display (id)
 );
 
 -- Displays
-insert into display (id, name, level, number)
-values (1, 'Main Menu', 0, 0),
-       (2, 'Menu', 0, 0),
-       (3, 'Game Over', 0, 0),
-       (4, 'Victory', 0, 0),
-       (5, 'Choose', 0, 0),
-       (6, 'Tip', 1, 1);
-
-insert into display (id, name, level, number)
-values (7, 'Question', 1, 1),
-       (8, 'Question', 1, 2),
-       (9, 'Question', 1, 3),
-       (10, 'Question', 1, 4);
+insert into display (id, name)
+values (1, 'Main Menu'),
+       (2, 'Menu'),
+       (3, 'Game Over'),
+       (4, 'Victory'),
+       (5, 'Choose'),
+       (6, 'Tip'),
+       (7, 'Question');
 
 -- Main Menu
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, size)
@@ -43,7 +37,7 @@ values (' ', 0.5, 0.3, '..|images|displays|logos', false, 1, default),
 
 -- Menu
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, size)
-values (' ', 0.5, 0.3, '..|images|displays|logos', false, 2),
+values (' ', 0.5, 0.3, '..|images|displays|logos', false, 2, default),
        ('Voltar', 0.5, 0.6, '..|images|displays|btn_small', false, 2, 16*2),
        ('Reiniciar', 0.5, 0.7, '..|images|displays|btn_small', false, 2, 16*2),
        ('Sair', 0.5, 0.8, '..|images|displays|btn_small', false, 2, 16*2);
@@ -57,21 +51,33 @@ insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
 values ('Garapa', 0.5, 0.5, '..|images|tela', false, 4);
 
 -- Choose
-insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Você tem certeza?', 0.5, 0.3, '..|images|displays|btn_qlarge', false, 5),
-       ('Sim', 0.25, 0.5, '..|images|displays|btn_small', false, 5),
-       ('Não', 0.75, 0.5, '..|images|displays|btn_small', false, 5);
+insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, size)
+values ('Você tem certeza?', 0.5, 0.3, '..|images|displays|btn_qlarge', false, 5, 16*3),
+       ('Sim', 0.25, 0.5, '..|images|displays|btn_small', false, 5, 16*2),
+       ('Não', 0.75, 0.5, '..|images|displays|btn_small', false, 5, 16*2);
 
--- Tip 1
-insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Dica 1', 0.5, 0.5, '..|images|tela', false, 6),
-       ('Dica 2', 0.5, 0.5, '..|images|tela', false, 6);
+-- Tips
+insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, number)
+values ('Para jogar você pode usar as teclas "A", "D" e   "espaço", você também pode usar as setinhas. Acima na esquerda estão suas vidas, representadas por cafés, tome cuidado, no caminho terão inimigos, para derrota-lós é preciso pular em suas cabeças. Também terão desafios, se erra-los voltará tudo. Boa Sorte.', 0.5, 0.5, '..|images|tela', false, 6, 0),
+       ('Variável é um local que armazena um tipo específico de conteúdo como números inteiros, textos, números reais entre outros.', 0.5, 0.5, '..|images|tela', false, 6, 1),
+       ('Podemos ter 4 tipos de variáveis primárias na programção, são elas: Inteiro, Real, Texto, Lógico.', 0.5, 0.5, '..|images|tela', false, 6, 2);
+
+
+
 
 -- Question 1
-insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, color, size)
-values ('O que é uma  variável?', 0.5, 0.25, '..|images|tela', false, 7, 'red', default),
-       ('Local que armazena um tipo específico de valor', 0.25, 0.6, '..|images|displays|btn_qlarge', true, 7, default, 20),
-       ('Local que armazena só um tipo específico de valor', 0.75, 0.6, '..|images|displays|btn_qlarge', false, 7, default, 20),
-       ('Local que armazena só textos', 0.25, 0.8, '..|images|displays|btn_qlarge', false, 7, default, 20),
-       ('Local que armazena só números inteiros', 0.75, 0.8, '..|images|displays|btn_qlarge', false, 7, default, 20);
+insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, color, size, number)
+values ('O que é uma  variável?', 0.5, 0.25, '..|images|tela', false, 7, 'red', default, 1),
+       ('Local que armazena um tipo específico de valor', 0.25, 0.6, '..|images|displays|btn_qlarge', true, 7, default, 20, 1),
+       ('Local que armazena só um tipo específico de valor', 0.75, 0.6, '..|images|displays|btn_qlarge', false, 7, default, 20, 1),
+       ('Local que armazena só textos', 0.25, 0.8, '..|images|displays|btn_qlarge', false, 7, default, 20, 1),
+       ('Local que armazena só números inteiros', 0.75, 0.8, '..|images|displays|btn_qlarge', false, 7, default, 20, 1);
+
+-- Question 2
+insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, color, size, number)
+values ('Quais são os tipos de variáveis que podemos ter na programação?', 0.5, 0.25, '..|images|tela', false, 7, 'red', default, 2),
+       ('Inteiro, Decimal, Verdadeiro, Letra', 0.25, 0.6, '..|images|displays|btn_qlarge', false, 7, default, 20, 2),
+       ('Número, Texto, Frase, Falso', 0.75, 0.6, '..|images|displays|btn_qlarge', false, 7, default, 20, 2),
+       ('Inteiro, Real, Texto, Lógico', 0.25, 0.8, '..|images|displays|btn_qlarge', true, 7, default, 20, 2),
+       ('Real, Lógico, Texto, Adição', 0.75, 0.8, '..|images|displays|btn_qlarge', false, 7, default, 20, 2);
 
