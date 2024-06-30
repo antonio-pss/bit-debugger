@@ -63,6 +63,7 @@ class Game:
         self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
         self.states['main_menu'].active = True
         self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
+        self.states['victory'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Victory'")
         self.states['game_over'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Game Over'")
         self.states['choose'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Choose'")
 
@@ -92,19 +93,21 @@ class Game:
                                      collision_sprites=self.groups['collision'],
                                      enemy_sprites=self.groups['enemy'],
                                      damage_sprites=self.groups['damage'])
-            if obj.name == 'Enemy':
+            elif obj.name == 'Enemy':
                 self.enemy.append(CI(rect=pygame.FRect(obj.x, obj.y, obj.width, obj.height),
                                 frames_walk=self.ci_frames_walk,
                                 frames_dead=self.ci_frames_dead,
                                 groups=(self.groups['game'], self.groups['enemy'])))
-            if obj.name == 'Question' or obj.name == 'Tip':
+            elif obj.name == 'Question' or obj.name == 'Tip':
                 Sprite(pos=(obj.x, obj.y),
                        surf=pygame.Surface((obj.width, obj.height)),
                        groups=self.groups['locations'],
                        number=obj.number,
                        name='question' if obj.name == 'Question' else 'tip')
-            if obj.name == 'Coin':
+            elif obj.name == 'Coin':
                 Coin(pos=(obj.x, obj.y), frames=self.coins, groups=self.groups['game'])
+            elif obj.name == 'Coffee':
+                CoffeeLife(pos=(obj.x, obj.y), surf=import_image('..', 'images', 'coffee'), groups=self.groups['game'], player=self.player)
 
         for i in range(self.player.hearts):
             Coffee((i*55, 0), self.coffee, self.groups['coffee'], i)
@@ -185,6 +188,9 @@ class Game:
         if self.player.hearts == 0:
             self.states['game_over'].active = True
 
+        if self.questions == 2:
+            self.states['victory'].active = True
+
     def pause(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]: self.states['menu'].active = not self.states['menu'].active
@@ -211,7 +217,7 @@ class Game:
                     self.display_surface.blit(scaled_surf, scaled_rect)
                     self.display_surface.blit(self.grayback, (0, 0))
 
-                self.states[self.state].update(self.states[self.state])
+                self.states[self.state].update(delta, self.states[self.state])
                 self.states[self.state].draw(self.display_surface)
                 self.check_menu()
             else:

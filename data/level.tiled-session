@@ -15,11 +15,11 @@
             }
         },
         "maps/map-bitdebugger_2.tmx": {
-            "scale": 0.5,
-            "selectedLayer": 4,
+            "scale": 0.33,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 1604,
-                "y": 404
+                "x": 5181.818181818182,
+                "y": 912.1212121212121
             }
         },
         "maps/map-bitdebugger_2.tmx#TileSet v1.0": {

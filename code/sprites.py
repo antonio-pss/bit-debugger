@@ -195,7 +195,7 @@ class Frame(pygame.sprite.Sprite):
         self.image.blit(self.text_surf, self.text_rect)
         self.rect = self.image.get_frect(center=pos)
 
-    def update(self, _):
+    def update(self, delta, _):
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos):
             self.image = self.frames[1]
@@ -280,7 +280,7 @@ class Dialog(pygame.sprite.Sprite):
             state.active = False
             self.kill()
 
-    def update(self, state):
+    def update(self, delta, state):
         self.put_letter()
         self.run(state)
 
@@ -303,3 +303,15 @@ class Coffee(AnimatedSprite):
             self.image = self.frames[1]
         else:
             self.image = self.frames[0]
+
+
+class CoffeeLife(Sprite):
+    def __init__(self, pos, surf, groups, player):
+        super().__init__(pos, surf, groups)
+        self.player = player
+        self.rect.center = pos
+
+    def update(self, delta, _):
+        if self.rect.colliderect(self.player.rect):
+            self.player.hearts += 1
+            self.kill()

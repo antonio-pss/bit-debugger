@@ -36,12 +36,15 @@ class States(pygame.sprite.Group):
                 self.dialog = Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (0, 0), self)
                 self.dialog.rect.midbottom = (WINDOW_WIDTH*0.4, WINDOW_HEIGHT - 100)
                 self.sprite = Sprite((0, 0), import_image('..', 'images', 'senior-update', 'senior-dica-update') if self.name == 'tips' else import_image('..', 'images', 'senior-update', 'senior-fail-update'), self)
-                self.sprite.rect.bottomleft = self.dialog.rect.bottomright
+                if self.name == 'tips':
+                    self.sprite.rect.bottomleft = self.dialog.rect.bottomright
+                else:
+                    self.sprite.rect.bottomleft = self.dialog.rect.bottomright - vector(100, 0)
             elif self.name == 'victory':
                 self.dialog = Dialog(row['text'], 16*3, import_image(*row['surf_path'].split('|')), row['color'], (0, 0), self)
                 self.dialog.rect.midbottom = (WINDOW_WIDTH * 0.4, WINDOW_HEIGHT - 100)
-                self.sprite = Coin((0, 0), import_folder('..', 'images', 'senior-update', 'senior-dica-update'), self)
-                self.sprite.rect.bottomleft = self.dialog.rect.bottomright
+                self.sprite = Coin((0, 0), import_folder('..', 'images', 'senior-update', 'senior_coffee'), self)
+                self.sprite.rect.bottomleft = self.dialog.rect.bottomright + vector(-25, 0)
             elif self.name == 'questions':
                 if row['pos_x'] == 0.5:
                     self.dialog = Dialog(row['text'], 16 * 3, import_image(*row['surf_path'].split('|')), row['color'],(WINDOW_WIDTH * row['pos_x'], WINDOW_HEIGHT * row['pos_y']), self)
@@ -68,10 +71,10 @@ class Locations(pygame.sprite.Group):
                 if sprite.text == 'tip' and key:
                     tip.empty()
                     tip.setup(f"select * from frame f inner join display d on f.id_display = d.id "
-                              f"where d.name = 'Tip' and d.level = {LEVEL} and d.number = {sprite.number}")
+                              f"where d.name = 'Tip' and f.number = {sprite.number}")
                     tip.active = True
                 elif sprite.text == 'question' and questions < sprite.number:
                     question.empty()
                     question.setup(f"select * from frame f inner join display d on f.id_display = d.id "
-                                   f"where d.name = 'Question' and d.level = {LEVEL} and d.number = {sprite.number}")
+                                   f"where d.name = 'Question' and f.number = {sprite.number}")
                     question.active = True
