@@ -44,11 +44,11 @@ values (' ', 0.5, 0.3, '..|images|displays|logos', false, 2, default),
 
 -- Game Over
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Paia', 0.5, 0.5, '..|images|tela', false, 3);
+values ('É uma pena, você perdeu todos os seus cafés, estamos sem energia para continuar. Vamos encher a  garrafa e você pode tentar novamente mais tarte. Lembre-se, aprendizado vem atráves de muitas tentativas. Se gostou, vote na gente pelo QR code. Boa sorte da próxima. Paia', 0.5, 0.5, '..|images|tela', false, 3);
 
 -- Victory
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display)
-values ('Garapa', 0.5, 0.5, '..|images|tela', false, 4);
+values ('Parabéns!! Você terminou nossa demo com sucesso, espero que tenha se divertido. Se gostou, vote na gente pelo QR code. Muito obrigado por ter jogado.', 0.5, 0.5, '..|images|tela', false, 4);
 
 -- Choose
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, size)
@@ -58,11 +58,9 @@ values ('Você tem certeza?', 0.5, 0.3, '..|images|displays|btn_qlarge', false, 
 
 -- Tips
 insert into frame (text, pos_x, pos_y, surf_path, answer, id_display, number)
-values ('Para jogar você pode usar as teclas "A", "D" e   "espaço", você também pode usar as setinhas. Acima na esquerda estão suas vidas, representadas por cafés, tome cuidado, no caminho terão inimigos, para derrota-lós é preciso pular em suas cabeças. Também terão desafios, se erra-los voltará tudo. Boa Sorte.', 0.5, 0.5, '..|images|tela', false, 6, 0),
+values ('Para jogar, você pode usar as teclas "A", "D" e  "espaço". Você também pode usar as setas do teclado. No canto superior esquerdo, estão suas vidas, representadas por cafés. No caminho, haverá inimigos; para derrotá-los, é preciso pular em suas cabeças. Também haverá desafios; se você errá-los, voltará ao início. Para sair da dica, aperte "E" novamente. Bom jogo e boa sorte.', 0.5, 0.5, '..|images|tela', false, 6, 0),
        ('Variável é um local que armazena um tipo específico de conteúdo como números inteiros, textos, números reais entre outros.', 0.5, 0.5, '..|images|tela', false, 6, 1),
-       ('Podemos ter 4 tipos de variáveis primárias na programção, são elas: Inteiro, Real, Texto, Lógico.', 0.5, 0.5, '..|images|tela', false, 6, 2);
-
-
+       ('Temos 4 tipos de variáveis primárias na programção, são elas: Inteiro, Real, Texto, Lógico.', 0.5, 0.5, '..|images|tela', false, 6, 2);
 
 
 -- Question 1

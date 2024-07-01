@@ -1,3 +1,5 @@
+import pygame
+
 from groups import *
 from sprites import *
 from support import *
@@ -114,12 +116,16 @@ class Game:
 
     def restart(self):
         self.player.rect.center = self.player.start_pos
-        self.player.hearts = 5
         self.player.check_pos = self.player.start_pos
         self.questions = 0
         for sprite in self.enemy:
             sprite.kill()
         self.enemy.clear()
+
+        self.states['victory'].setup(
+            "select * from frame f inner join display d on f.id_display = d.id where d.name = 'Victory'")
+        self.states['game_over'].setup(
+            "select * from frame f inner join display d on f.id_display = d.id where d.name = 'Game Over'")
 
         tmx_map = load_pygame(join('..', 'data', 'maps', 'map-bitdebugger_2.tmx'))
         for obj in tmx_map.get_layer_by_name('entities'):
@@ -132,13 +138,15 @@ class Game:
     def check_menu(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_button = pygame.mouse.get_pressed()[0]
+        keys = pygame.key.get_just_pressed()
 
         for state in self.states.values():
             if state.active:
-                if state.name == 'game_over' and mouse_button:
+                if (state.name == 'game_over' or state.name == 'victory') and keys[pygame.K_ESCAPE]:
+                    self.questions = 0
+                    self.player.hearts = 5
                     state.active = False
                     self.states['main_menu'].active = True
-                    self.player.hearts = 5
                 for sprite in state:
                     if sprite.rect.collidepoint(mouse_pos) and mouse_button:
 
@@ -178,6 +186,7 @@ class Game:
                                     self.player.hearts -= 1
                                 else:
                                     self.player.check_pos = self.player.rect.center
+                                    self.player.hearts = 5
                                     state.active = False
                                     self.questions += 1
 

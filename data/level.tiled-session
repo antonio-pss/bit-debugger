@@ -15,11 +15,11 @@
             }
         },
         "maps/map-bitdebugger_2.tmx": {
-            "scale": 0.125,
+            "scale": 1.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 3432,
-                "y": 1216
+                "x": 539.3333333333333,
+                "y": 664
             }
         },
         "maps/map-bitdebugger_2.tmx#TileSet v1.0": {
@@ -38,7 +38,7 @@
             "scaleInEditor": 1
         },
         "tileset/industrial-plataform.tsx": {
-            "scaleInDock": 1
+            "scaleInDock": 0.75
         }
     },
     "last.imagePath": "D:/Estudos/bit-debugger/data/graphics",
