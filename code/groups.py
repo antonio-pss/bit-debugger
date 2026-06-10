@@ -40,6 +40,7 @@ class States(pygame.sprite.Group):
         super().__init__()
         self.active = False
         self.name = name
+        self.interact_pressed = False
 
     def setup(self, number=None):
         rows = get_display_rows(DISPLAY_NAMES[self.name], number)

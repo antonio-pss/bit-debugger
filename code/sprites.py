@@ -285,7 +285,7 @@ class Dialog(pygame.sprite.Sprite):
 
     def run(self, state):
         mouse = pygame.mouse.get_pressed()[0]
-        key = pygame.key.get_just_pressed()[pygame.K_e]
+        key = state.interact_pressed
         if '...' in self.text:
             if mouse or key:
                 self.texts_sprites_index = 0

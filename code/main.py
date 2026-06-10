@@ -267,6 +267,7 @@ class Game:
                     self.draw_game()
                     self.display_surface.blit(self.grayback, (0, 0))
 
+                self.states[self.state].interact_pressed = interact_pressed
                 self.states[self.state].update(delta, self.states[self.state])
                 self.states[self.state].draw(self.display_surface)
                 self.check_menu(click_pos, escape_pressed)

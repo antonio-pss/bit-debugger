@@ -437,6 +437,19 @@ frameborder="1"
     }
 
     let ambientStarted = false
+    const gameKeys = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "Space"])
+
+    function focusGame() {
+        document.getElementById("canvas").focus({preventScroll: true})
+    }
+
+    window.addEventListener("keydown", event => {
+        if (gameKeys.has(event.code)) {
+            event.preventDefault()
+        }
+    }, {passive: false})
+
+    document.getElementById("game-shell").addEventListener("pointerdown", focusGame)
 
     function mirrorCanvas() {
         const source = document.getElementById("canvas")
@@ -453,7 +466,7 @@ frameborder="1"
 
     function finishLoading() {
         document.getElementById("loading").classList.add("done")
-        document.getElementById("canvas").focus()
+        focusGame()
         if (!ambientStarted) {
             ambientStarted = true
             mirrorCanvas()
