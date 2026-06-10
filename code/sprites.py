@@ -1,6 +1,8 @@
 import pygame
+from math import ceil
+from pygame.math import Vector2 as vector
 
-from settings import *
+from settings import PHYSICS_STEP, resource_path
 from timer import Timer
 
 
@@ -45,26 +47,36 @@ class Player(AnimatedSprite):
         self.enemy_sprites = enemy_sprites
         self.direction = vector()
         self.speed = 250
-        self.gravity = 50
+        self.gravity = 3000
+        self.jump_speed = 840
+        self.stomp_jump_speed = 600
         self.on_floor = False
 
-    def input(self, delta):
+    def input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d] or keys[pygame.K_a]:
             self.direction.x = keys[pygame.K_d] - keys[pygame.K_a]
         else:
             self.direction.x = keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]
         if (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.on_floor:
-            self.direction.y -= 14
+            self.direction.y = -self.jump_speed
+            self.on_floor = False
 
     def move(self, delta):
+        steps = max(1, ceil(delta / PHYSICS_STEP))
+        step_delta = delta / steps
+
+        for _ in range(steps):
+            self.move_step(step_delta)
+
+    def move_step(self, delta):
         # horizontal
         self.rect.x += self.direction.x * self.speed * delta
         self.collision('horizontal')
 
         # vertical
         self.direction.y += self.gravity * delta
-        self.rect.y += self.direction.y
+        self.rect.y += self.direction.y * delta
         self.collision('vertical')
 
     def collision(self, direction):
@@ -85,8 +97,13 @@ class Player(AnimatedSprite):
 
     def check_border(self, level_height):
         if self.rect.y > level_height + 1000:
-            self.rect.center = self.start_pos
+            self.respawn(self.start_pos)
             self.hearts -= 1
+
+    def respawn(self, position):
+        self.rect.center = position
+        self.direction.update(0, 0)
+        self.on_floor = False
 
     def animate(self, delta):
         # personagem virar quando andar
@@ -107,21 +124,21 @@ class Player(AnimatedSprite):
             if self.rect.colliderect(enemy.rect) and not enemy.death_timer:
                 if self.rect.bottom < enemy.rect.top + enemy.rect.height and self.direction.y > 0:
                     enemy.destroy()
-                    self.direction.y = -10
+                    self.direction.y = -self.stomp_jump_speed
                 else:
-                    self.rect.center = self.check_pos
+                    self.respawn(self.check_pos)
                     self.hearts -= 1
 
     def check_damage_collision(self):
         for sprite in self.damage_sprites:
             if self.rect.colliderect(sprite.rect):
                 self.hearts -= 1
-                self.rect.center = self.check_pos
+                self.respawn(self.check_pos)
 
     def update(self, delta, level_height):
         self.check_floor()
         self.check_border(level_height)
-        self.input(delta)
+        self.input()
         self.move(delta)
         self.check_enemy_collision()
         self.check_damage_collision()
@@ -187,7 +204,7 @@ class Frame(pygame.sprite.Sprite):
         self.answer = answer
         self.name = 'Frame'
 
-        self.font = pygame.Font(join('..', 'font.ttf'), int(size))
+        self.font = pygame.Font(resource_path('font.ttf'), int(size))
         self.text_surf = self.font.render(text, True, 'White')
         self.text_rect = self.text_surf.get_frect(center=self.image.get_frect().center)
 
@@ -207,7 +224,7 @@ class Frame(pygame.sprite.Sprite):
 class PressText(pygame.sprite.Sprite):
     def __init__(self, text, size, color, pos, groups):
         super().__init__(groups)
-        self.font = pygame.font.Font(join('..', 'font.ttf'), size)
+        self.font = pygame.font.Font(resource_path('font.ttf'), size)
         self.image = self.font.render(text, False, color)
         self.rect = self.image.get_frect(center=pos)
 
@@ -288,7 +305,7 @@ class Dialog(pygame.sprite.Sprite):
 class DialogText(pygame.sprite.Sprite):
     def __init__(self, text, size, color, pos, groups):
         super().__init__(groups)
-        self.font = pygame.font.Font(join('..', 'font.ttf'), size)
+        self.font = pygame.font.Font(resource_path('font.ttf'), size)
         self.image = self.font.render(text, False, color)
         self.rect = self.image.get_frect(topleft=pos)
 
