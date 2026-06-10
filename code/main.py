@@ -55,19 +55,17 @@ class Game:
         self.ci_frames_walk = import_folder('..', 'images', 'enemy', 'ci-walk')
         self.ci_frames_dead = import_folder('..', 'images', 'enemy', 'ci-dead')
         self.background = import_image('..', 'data', 'maps', 'background')
-        self.btn_small = import_folder('..', 'images', 'displays', 'btn_small')
-        self.btn_large = import_folder('..', 'images', 'displays', 'btn_large')
         self.spike = import_image('..', 'images', 'spike')
         self.coins = import_folder('..', 'images', 'coins')
         self.coffee = import_folder('..', 'images', 'coffee')
 
     def setup(self):
-        self.states['main_menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Main Menu'")
+        self.states['main_menu'].setup()
         self.states['main_menu'].active = True
-        self.states['menu'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Menu'")
-        self.states['victory'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Victory'")
-        self.states['game_over'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Game Over'")
-        self.states['choose'].setup("select * from frame f inner join display d on f.id_display = d.id where d.name = 'Choose'")
+        self.states['menu'].setup()
+        self.states['victory'].setup()
+        self.states['game_over'].setup()
+        self.states['choose'].setup()
 
         self.grayback = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
         self.grayback.fill((0, 0, 0, 128))

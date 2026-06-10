@@ -1,8 +1,22 @@
 import pygame
+from pygame.math import Vector2 as vector
 
-from settings import *
-from support import *
-from sprites import *
+from settings import WINDOW_HEIGHT, WINDOW_WIDTH
+from support import import_folder, import_image
+from sprites import Coin, Dialog, Frame, PressText, Sprite
+from timer import Timer
+from ui_data import get_display_rows
+
+
+DISPLAY_NAMES = {
+    'main_menu': 'Main Menu',
+    'menu': 'Menu',
+    'victory': 'Victory',
+    'game_over': 'Game Over',
+    'choose': 'Choose',
+    'tips': 'Tip',
+    'questions': 'Question',
+}
 
 
 class GameSprites(pygame.sprite.Group):
@@ -25,8 +39,8 @@ class States(pygame.sprite.Group):
         self.active = False
         self.name = name
 
-    def setup(self, command):
-        rows = sql_importer(command)
+    def setup(self, number=None):
+        rows = get_display_rows(DISPLAY_NAMES[self.name], number)
 
         if self.name == 'tips':
             Sprite((0, 0), pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA), self)
@@ -70,11 +84,9 @@ class Locations(pygame.sprite.Group):
                     PressText('Aperte E para ver a dica.', 16, 'white', sprite.rect.midtop, game)
                 if sprite.text == 'tip' and key:
                     tip.empty()
-                    tip.setup(f"select * from frame f inner join display d on f.id_display = d.id "
-                              f"where d.name = 'Tip' and f.number = {sprite.number}")
+                    tip.setup(sprite.number)
                     tip.active = True
                 elif sprite.text == 'question' and questions < sprite.number:
                     question.empty()
-                    question.setup(f"select * from frame f inner join display d on f.id_display = d.id "
-                                   f"where d.name = 'Question' and f.number = {sprite.number}")
+                    question.setup(sprite.number)
                     question.active = True
