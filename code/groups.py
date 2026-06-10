@@ -28,9 +28,11 @@ class GameSprites(pygame.sprite.Group):
     def draw(self, target_pos, surface):
         self.offset.x = -(target_pos[0] - surface.get_width() / 2)
         self.offset.y = -(target_pos[1] - surface.get_height() / 2)
+        viewport = surface.get_rect(topleft=-self.offset)
 
         for sprite in self:
-            surface.blit(sprite.image, sprite.rect.topleft + self.offset)
+            if sprite.rect.colliderect(viewport):
+                surface.blit(sprite.image, sprite.rect.topleft + self.offset)
 
 
 class States(pygame.sprite.Group):
@@ -69,24 +71,28 @@ class States(pygame.sprite.Group):
 
 
 class Locations(pygame.sprite.Group):
+    INTERACTION_PADDING = (32, 24)
+
     def __init__(self):
         super().__init__()
         self.timer = Timer(1000)
 
-    def update(self, player, tip, question, questions, game):
+    def update(self, player, tip, question, questions, game, interact_pressed):
         self.timer.update()
-        key = pygame.key.get_just_pressed()[pygame.K_e]
 
         for sprite in self:
-            if player.rect.colliderect(sprite.rect):
+            interaction_rect = sprite.rect.inflate(*self.INTERACTION_PADDING)
+            if player.rect.colliderect(interaction_rect):
                 if sprite.text == 'tip' and not self.timer:
                     self.timer.activate()
                     PressText('Aperte E para ver a dica.', 16, 'white', sprite.rect.midtop, game)
-                if sprite.text == 'tip' and key:
+                if sprite.text == 'tip' and interact_pressed:
                     tip.empty()
                     tip.setup(sprite.number)
                     tip.active = True
+                    return
                 elif sprite.text == 'question' and questions < sprite.number:
                     question.empty()
                     question.setup(sprite.number)
                     question.active = True
+                    return

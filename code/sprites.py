@@ -29,10 +29,12 @@ class AnimatedSprite(Sprite):
 
 
 class Player(AnimatedSprite):
+    MAX_HEARTS = 5
+
     def __init__(self, pos, frames_walk, frames_jumping, groups, collision_sprites, enemy_sprites, damage_sprites):
         super().__init__(pos, frames_walk, groups)
         self.flip = False
-        self.hearts = 5
+        self.hearts = self.MAX_HEARTS
 
         # frames
         self.frames_jumping = frames_jumping
@@ -134,6 +136,7 @@ class Player(AnimatedSprite):
             if self.rect.colliderect(sprite.rect):
                 self.hearts -= 1
                 self.respawn(self.check_pos)
+                return
 
     def update(self, delta, level_height):
         self.check_floor()
@@ -330,5 +333,8 @@ class CoffeeLife(Sprite):
 
     def update(self, delta, _):
         if self.rect.colliderect(self.player.rect):
-            self.player.hearts += 1
+            self.player.hearts = min(
+                self.player.hearts + 1,
+                self.player.MAX_HEARTS,
+            )
             self.kill()

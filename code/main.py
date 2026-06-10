@@ -70,6 +70,7 @@ class Game:
         self.spike = import_image('..', 'images', 'spike')
         self.coins = import_folder('..', 'images', 'coins')
         self.coffee = import_folder('..', 'images', 'coffee')
+        self.coffee_life = import_image('..', 'images', 'coffee')
 
     def setup(self):
         self.states['main_menu'].setup()
@@ -90,7 +91,11 @@ class Game:
         self.level_height = self.tmx_map.height * TILE_SIZE
 
         for x, y, _ in self.tmx_map.get_layer_by_name('blocos').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((32, 32), pygame.SRCALPHA), (self.groups['game'], self.groups['collision']))
+            Sprite(
+                (x * TILE_SIZE, y * TILE_SIZE),
+                pygame.Surface((TILE_SIZE, TILE_SIZE)),
+                self.groups['collision'],
+            )
 
         for x, y, _ in self.tmx_map.get_layer_by_name('damage').tiles():
             Sprite((x * TILE_SIZE + 6, y * TILE_SIZE + 17), self.spike, (self.groups['game'], self.groups['damage']))
@@ -116,7 +121,7 @@ class Game:
 
         self.spawn_dynamic_entities()
 
-        for i in range(self.player.hearts):
+        for i in range(self.player.MAX_HEARTS):
             Coffee((i*55, 0), self.coffee, self.groups['coffee'], i)
 
     def spawn_dynamic_entities(self):
@@ -133,7 +138,7 @@ class Game:
             elif obj.name == 'Coffee':
                 CoffeeLife(
                     (obj.x, obj.y),
-                    import_image('..', 'images', 'coffee'),
+                    self.coffee_life,
                     self.groups['game'],
                     self.player,
                 )
@@ -149,7 +154,7 @@ class Game:
         self.groups['enemy'].empty()
         self.spawn_dynamic_entities()
 
-        self.player.hearts = 5
+        self.player.hearts = self.player.MAX_HEARTS
         self.player.respawn(self.player.start_pos)
         self.player.check_pos = vector(self.player.start_pos)
         self.questions = 0
@@ -200,7 +205,7 @@ class Game:
                                     self.player.hearts -= 1
                                 else:
                                     self.player.check_pos = self.player.rect.center
-                                    self.player.hearts = 5
+                                    self.player.hearts = self.player.MAX_HEARTS
                                     state.active = False
                                     self.questions += 1
                         return
@@ -235,13 +240,17 @@ class Game:
 
             click_pos = None
             escape_pressed = False
+            interact_pressed = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     click_pos = event.pos
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    escape_pressed = True
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        escape_pressed = True
+                    elif event.key == pygame.K_e:
+                        interact_pressed = True
 
             if self.states[self.state].active:
                 if self.state == 'main_menu':
@@ -266,9 +275,15 @@ class Game:
                 self.groups['coffee'].draw(self.display_surface)
 
                 self.groups['game'].update(delta, self.level_height)
-                self.groups['enemy'].update(delta, self.level_height)
                 self.groups['coffee'].update(self.player.hearts)
-                self.groups['locations'].update(self.player, self.states['tips'], self.states['questions'], self.questions, self.groups['game'])
+                self.groups['locations'].update(
+                    self.player,
+                    self.states['tips'],
+                    self.states['questions'],
+                    self.questions,
+                    self.groups['game'],
+                    interact_pressed,
+                )
                 self.pause(escape_pressed)
 
             self.check_state()
